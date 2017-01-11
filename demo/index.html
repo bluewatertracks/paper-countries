@@ -1,0 +1,74 @@
+<!doctype html>
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+<html>
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
+    <title>paper-countries Demo</title>
+    <script>
+    	window.Polymer = {lazyRegister: true, dom: 'shadow'};
+    </script>
+    <script src="../bower_components/webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="../paper-countries.html">
+    <style>
+        body{
+           overflow-x: hidden; 
+        }
+    </style>
+</head>
+
+<body>
+    <template is="dom-bind" id="app" >
+        <div>
+            <h1>paper-countries example</h1> 
+            <h3>Below following example demonstrates paper-countries with max-suggestions 2</h3>
+        </div>
+        <paper-countries max-suggestions="2" id="countryCode" country="[[country]]" input-value="[[country.name]]" display-prop="name"
+            auto-validate="true" placeholder="Country">
+        </paper-countries>
+        <h3>Below following example demonstrates paper-countries with max-suggestions 5</h3>
+        <paper-countries max-suggestions="5" id="countryCode2" country="[[country]]" input-value="[[country.name]]" display-prop="name"
+            auto-validate="true" placeholder="Country">
+        </paper-countries>
+         <h3>Below following example demonstrates paper-countries with required</h3>
+        <paper-countries max-suggestions="5" id="countryCode3" country="[[country]]" input-value="[[country.name]]" display-prop="name"
+            auto-validate="true" placeholder="Country" required="[[bool]]">
+        </paper-countries>
+         <h3>Below following example demonstrates paper-countries with readonly</h3>
+        <paper-countries max-suggestions="5" id="countryCode4" country="[[country4]]" input-value="[[country4.name]]" display-prop="name"
+            auto-validate="true" placeholder="Country" readonly="[[readonly]]">
+        </paper-countries>
+        <h3>Below following example demonstrates paper-countries with disabled</h3>
+        <paper-countries max-suggestions="5" id="countryCode5" country="[[country4]]" input-value="[[country4.name]]" display-prop="name"
+            auto-validate="true" placeholder="Country" disabled="[[disabled]]">
+        </paper-countries>
+    </template>
+</body>
+<script>
+    (function() {
+      var scope = document.querySelector('#app');
+      document.addEventListener('WebComponentsReady', function() {
+        scope.country = {
+          name:"",
+          code:""
+        };
+        scope.bool =true;
+        scope.readonly=true;
+        scope.country4 ={
+            name:"India",
+            code:"in"
+        };
+        scope.disabled=true;
+      });
+    })();
+  </script>
+</html>

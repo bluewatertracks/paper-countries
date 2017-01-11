@@ -1,0 +1,35 @@
+{
+  "name": "paper-countries",
+  "homepage": "https://github.com/bluewatertracks/paper-countries",
+  "authors": [
+    "Blue Water tracks"
+  ],
+  "description": "Country flag dropdown",
+  "main": "paper-countries.html",
+  "keywords": [
+    "paper-countries",
+    "country-flag-dropdown",
+    "webcomponent"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "flag-icon-css": "^2.7.0",
+    "polymer": "^1.7.1",
+    "paper-input": "^1.1.22",
+    "paper-menu": "^1.2.2",
+    "paper-item": "^1.2.1",
+    "iron-ajax": "^1.4.3",
+    "paper-material": "^1.0.6"
+  },
+  "devDependencies": {
+    "paper-header-panel": "^1.1.7",
+    "paper-toolbar": "^1.1.7"
+  }
+}

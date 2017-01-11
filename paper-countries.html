@@ -1,0 +1,361 @@
+<link rel="import" href="bower_components/paper-menu/paper-menu.html">
+<link rel="import" href="bower_components/polymer/polymer.html">
+<link rel="import" href="bower_components/paper-input/paper-input.html">
+<link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
+<link rel="import" href="bower_components/paper-item/paper-item.html">
+<link rel="import" href="bower_components/paper-material/paper-material.html">
+<script type="text/javascript" src="./countries.js"></script>
+<dom-module id="paper-countries">
+    <template>
+        <style>
+             :host {
+                display: block; 
+                box-sizing: border-box;
+            }
+            paper-material {
+                left: 0;
+                right: 0;
+                position: absolute;
+                z-index: 10;
+            }
+            
+            paper-item {
+                cursor: pointer;
+            }
+
+             .countrycode::first-letter {
+                visibility: hidden;
+            }
+
+            .countrycode {
+                font-family: 'Roboto', 'Noto', sans-serif;
+                -webkit-font-smoothing: antialiased;
+                font-size: 16px;
+                font-weight: 400;
+                line-height: 24px;
+                color: #737373;
+            }
+
+            .countrycode-with-label {
+                position: absolute;
+                top: 12px;
+            }
+            
+            .countrycode-without-label {
+                position: absolute;
+                top: -8px;
+            }
+
+            .iron-selected {
+                background: #E0E0E0;
+            }
+            
+            .flag-icon {
+                background-size: contain;
+                background-position: 50%;
+                background-repeat: no-repeat;
+                position: relative;
+                display: inline-block;
+                width: 100px;
+                height: 30px;
+            }
+        </style>
+        <div style="position:relative;">
+            <paper-input id="input"  value="{{inputValue}}" country={{country}} on-keyup="_keyup" on-keydown="_keydown" label="{{placeholder}}"
+                always-float-label="{{alwaysFloatLabel}}" autofocus="{{autofocus}}" char-counter="{{charCounter}}" disabled="{{disabled}}"
+                error-message="{{errorMessage}}" no-label-float="{{noLabelFloat}}"
+                readonly="{{readonly}}" required="{{required}}" auto-validate="{{autoValidate}}" >
+            </paper-input>
+            <span id="inputIcon" class="flag-icon" style$="background-image:url([[iconUrl]]);right:-25px;position:absolute;top:16px;"></span>
+            <template is="dom-if" if="{{suggestions.length}}" >
+                <paper-material>
+                    <paper-menu on-iron-select="_itemSelect" >
+                        <template is="dom-repeat" items="{{suggestions}}">
+                                <paper-item on-mouseover="_selection" on-tap="_select">
+                                    <span>{{_getDisplayValue(item)}}</span>
+                                    <span class="flag-icon" style$="background-image:url({{_getDisplayIcon(item)}});right: -20px;position:absolute;"></span>
+                                </paper-item>
+                        </template>
+                    </paper-menu>
+                </paper-material>
+            </template>
+        </div>
+    </template>
+</dom-module>
+<script>
+
+  Polymer({
+
+    is: 'paper-countries',
+    properties: {
+      label:{
+        type:String,
+        value:''
+      },
+      required:Boolean,
+      placeholder:{
+        type:String,
+        value:'Please enter values here'
+      },
+      /**
+      * The prefetched candidates get by prefetchUrl
+      */
+      _prefetchedCandidates:{
+        type:Array,
+        value:window.countries
+      },
+      /**
+       * Internal variable holding all matched suggestions.
+       */
+      suggestions:{
+        type:Array,
+        readOnly:true,
+        value:[]
+      },
+      /**
+       * Maximum number of suggestions to show up in countrycode.
+       */
+      maxSuggestions:{
+        type:Number,
+        value:5
+      },
+      
+      /**
+        * The property in json object that should be chosen for the paper-input value when an element is selected from the suggestions.
+        * This property only makes sense when property isCandidatesJson set to be true.
+        */
+      displayProp:{
+        type:String,
+      },
+      
+      /**
+       * Input value.
+       */
+      inputValue:{
+        type:String,
+        notify:true
+      },
+      /**
+       * Input object.
+       */
+      inputObject:{
+        type:Object,
+        notify:true
+      },
+      /**
+       * Bind this to the <paper-input>'s alwaysFloatLabel property.
+       */
+      alwaysFloatLabel:Boolean,
+      /**
+       * Bind this to the <paper-input>'s autofocus property.
+       */
+      autofocus:Boolean,
+      /**
+       * Bind this to the <paper-input>'s charCounter property.
+       */
+      charCounter:Boolean,
+      /**
+       * Bind this to the <paper-input>'s disabled property.
+       */
+      disabled:Boolean,
+      /**
+       * Bind this to the <paper-input>'s errorMessage property.
+       */
+      errorMessage:String,
+      /**
+       * Bind this to the <paper-input>'s noLabelFloat property.
+       */
+      noLabelFloat:{
+        type:Boolean,
+        value:false
+      },
+      /**
+       * Bind this to the <paper-input>'s readonly property.
+       */
+      readonly:Boolean,
+      /**
+       * Bind this to the <paper-input>'s autoValidate property.
+       */
+      autoValidate:Boolean,
+      iconUrl:String,
+      country:{
+        type:Object,
+        notify:true,
+        observer: "_dataChange"
+      },
+      path:{
+        type:String,
+        value:"/bower_components/flag-icon-css/flags/4x3/"
+      }
+    },
+    
+    _itemSelect:function(e, detail){
+      this.fire('pt-item-select',detail);
+    },
+    // Element Behavior
+    /**
+     * Callback for keydown event
+     *
+     * @param {e} event
+     */
+    _keydown: function(e) {
+      if (e.which == 40 || e.which == 38){
+          e.preventDefault();
+      }
+      else if (e.which == 8) {
+        this.iconUrl='';
+      }
+    },
+    /**
+     * Callback on mouseover event on paper-item
+     *
+     */
+    _selection:function(e){
+      var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
+      if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
+        var selectedItem = e.currentTarget;
+        index = Number(suggestionsMenu.indexOf(selectedItem));
+        suggestionsMenu.select(index);
+        var input = Polymer.dom(this.root).querySelector('paper-input');
+        input.$.input.focus();
+      }
+      else{
+        console.log("suggestionsMenu not defined");
+      }
+    },
+    /**
+     * Callback on click event on paper-item
+     */
+    _select: function(e) {
+      var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
+      if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
+        var selectedItem = e.currentTarget;
+        this.calculation(selectedItem,suggestionsMenu);
+        e.stopPropagation();
+      }
+      else{
+        console.log("suggestionsMenu not defined");
+      }
+    },
+    /**
+     * Callback for keyup event
+     *
+     * @param {e} event
+     */
+    _keyup: function(e) {
+      if (e.which == 40){
+        //down button
+        var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
+        var selectedItem = suggestionsMenu.focusedItem;
+        var index = 0;
+        if (typeof(selectedItem) != 'undefined'){
+          index = Number(suggestionsMenu.indexOf(selectedItem));
+          index = Math.min(index + 1, this.suggestions.length - 1);
+        }
+        suggestionsMenu.select(index);
+        var input = Polymer.dom(this.root).querySelector('paper-input');
+        input.$.input.focus();
+      }
+      else if (e.which == 38){
+        //up
+        var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
+        var selectedItem = suggestionsMenu.focusedItem;
+        if (typeof(selectedItem) != 'undefined'){
+          index = Number(suggestionsMenu.indexOf(selectedItem));
+          index = Math.max(index - 1, -1);
+          suggestionsMenu.select(index);
+        }
+        var input = Polymer.dom(this.root).querySelector('paper-input');
+        input.$.input.focus();
+      }
+      else if (e.which == 13){
+        var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
+        if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
+          var selectedItem = suggestionsMenu.focusedItem;
+          this.calculation(selectedItem,suggestionsMenu);
+        }
+      }
+      else if (e.which == 9){
+        //prevent fire search for tab key
+      }
+      else{
+        var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
+        if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
+          suggestionsMenu.select(-1);
+        }
+        this._search(this.inputValue.trim());
+      }
+    },
+    _getDisplayValue:function(item){
+      if (this.displayProp && typeof(this.displayProp) != 'undefined'){
+        return item[this.displayProp];
+      }
+      else{
+        console.log("paper-countries: displayProp not set up");
+        return "";
+      }
+    },
+    _getTestCandidate:function(item){
+        var toTest = []
+        toTest.push(item.name);
+        return toTest;
+    },
+    _search:function(term){
+      if (term == ""){
+        this._setSuggestions([]);
+        return;
+      }
+      var patt =  new RegExp(term.toLowerCase());
+      var matched = [];
+        for (var i = 0; i < this._prefetchedCandidates.length; i ++){
+          if (matched.length == this.maxSuggestions){
+            break;
+          }
+          var toTest = this._getTestCandidate(this._prefetchedCandidates[i]);
+          for (var j = 0; j < toTest.length; j ++){
+            var item = toTest[j];
+            if (patt.test(item.toLowerCase()) == true){
+              matched.push(this._prefetchedCandidates[i]);
+              break;
+            }
+          }
+        }
+        this._setSuggestions(matched);
+    },
+    _getDisplayIcon:function(item){
+      if (this.displayProp && typeof(this.displayProp) != 'undefined'){
+            var flag =item.code.toLowerCase()+".svg";
+            var img = this.path+flag;          
+            return img;
+      }
+      else{
+        console.log("paper-countries: displayProp not set up");
+        return "";
+      }
+    },
+    _dataChange : function(data){
+      if(data&&data.hasOwnProperty("code")){
+      var flag =data.code ? data.code.toLowerCase()+".svg":"";
+      if(flag) this.iconUrl = this.path+flag;
+      }
+      if(!data){
+        this.iconUrl='';
+      }
+    },
+    calculation:function(selectedItem,suggestionsMenu){
+      if (typeof(selectedItem) != 'undefined'){
+          var index = Number(suggestionsMenu.indexOf(selectedItem));
+              this.inputObject = this.suggestions[index];
+              this.inputValue = this._getDisplayValue(this.inputObject);
+              var flag =this.inputObject.code.toLowerCase()+".svg";
+              this.iconUrl = this.path+flag;
+              this.country = {
+                code:this.inputObject.code.toLowerCase(),
+                name:this.inputValue
+              };
+            this._setSuggestions([]);
+            this.fire('pt-item-confirmed',selectedItem);
+      }
+    }    
+  });
+</script>
