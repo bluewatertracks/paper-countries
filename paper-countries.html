@@ -1,3 +1,14 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+
 <link rel="import" href="bower_components/paper-menu/paper-menu.html">
 <link rel="import" href="bower_components/polymer/polymer.html">
 <link rel="import" href="bower_components/paper-input/paper-input.html">
@@ -5,6 +16,38 @@
 <link rel="import" href="bower_components/paper-item/paper-item.html">
 <link rel="import" href="bower_components/paper-material/paper-material.html">
 <script type="text/javascript" src="./countries.js"></script>
+<!--
+
+`<paper-countries>` is a dropdown for countries with images. It is useful for selecting country along with code and image.
+
+    <paper-countries country="[[country]]" input-value="[[country.name]]" auto-validate="true" placeholder="Country"></paper-countries>
+
+The label that will show up as the label for tags input. It not specified, defualt Country will be displayed. In this case max-suggestions set to 2.
+
+It also have extra feature like showing no of suggestions in dropdown. By default value is 5.
+
+    <paper-countries max-suggestions="2"  country="[[country]]" input-value="[[country.name]]" auto-validate="true" placeholder="Country">
+    
+
+A `paper-countries` can use the country property to set country name in the dropdown along with the country flag
+
+### Styling
+
+The following custom properties are available for styling:
+
+### Installation 
+
+Install with bower
+
+    bower install paper-countries
+
+If you want to save it in bower.json file, remember to add flag --save
+
+    bower install --save paper-countries
+
+@element paper-countries
+@demo demo/index.html
+-->
 <dom-module id="paper-countries">
     <template>
         <style>
@@ -62,11 +105,11 @@
         </style>
         <div style="position:relative;">
             <paper-input id="input"  value="{{inputValue}}" country={{country}} on-keyup="_keyup" on-keydown="_keydown" label="{{placeholder}}"
-                always-float-label="{{alwaysFloatLabel}}" autofocus="{{autofocus}}" char-counter="{{charCounter}}" disabled="{{disabled}}"
+                always-float-label="{{alwaysFloatLabel}}" autofocus="{{autofocus}}" disabled="{{disabled}}"
                 error-message="{{errorMessage}}" no-label-float="{{noLabelFloat}}"
                 readonly="{{readonly}}" required="{{required}}" auto-validate="{{autoValidate}}" >
             </paper-input>
-            <span id="inputIcon" class="flag-icon" style$="background-image:url([[iconUrl]]);right:-25px;position:absolute;top:16px;"></span>
+            <span id="inputIcon" class="flag-icon" style$="background-image:url([[_iconUrl]]);right:-25px;position:absolute;top:16px;"></span>
             <template is="dom-if" if="{{suggestions.length}}" >
                 <paper-material>
                     <paper-menu on-iron-select="_itemSelect" >
@@ -90,7 +133,7 @@
     properties: {
       label:{
         type:String,
-        value:''
+        value:'Country'
       },
       required:Boolean,
       placeholder:{
@@ -124,8 +167,9 @@
         * The property in json object that should be chosen for the paper-input value when an element is selected from the suggestions.
         * This property only makes sense when property isCandidatesJson set to be true.
         */
-      displayProp:{
+      _displayProp:{
         type:String,
+        value:"name"
       },
       
       /**
@@ -151,10 +195,6 @@
        */
       autofocus:Boolean,
       /**
-       * Bind this to the <paper-input>'s charCounter property.
-       */
-      charCounter:Boolean,
-      /**
        * Bind this to the <paper-input>'s disabled property.
        */
       disabled:Boolean,
@@ -177,13 +217,13 @@
        * Bind this to the <paper-input>'s autoValidate property.
        */
       autoValidate:Boolean,
-      iconUrl:String,
+      _iconUrl:String,
       country:{
         type:Object,
         notify:true,
         observer: "_dataChange"
       },
-      path:{
+      _path:{
         type:String,
         value:"/bower_components/flag-icon-css/flags/4x3/"
       }
@@ -203,7 +243,7 @@
           e.preventDefault();
       }
       else if (e.which == 8) {
-        this.iconUrl='';
+        this._iconUrl='';
       }
     },
     /**
@@ -230,7 +270,7 @@
       var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
       if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
         var selectedItem = e.currentTarget;
-        this.calculation(selectedItem,suggestionsMenu);
+        this._calculation(selectedItem,suggestionsMenu);
         e.stopPropagation();
       }
       else{
@@ -272,7 +312,7 @@
         var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
         if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
           var selectedItem = suggestionsMenu.focusedItem;
-          this.calculation(selectedItem,suggestionsMenu);
+          this._calculation(selectedItem,suggestionsMenu);
         }
       }
       else if (e.which == 9){
@@ -287,13 +327,7 @@
       }
     },
     _getDisplayValue:function(item){
-      if (this.displayProp && typeof(this.displayProp) != 'undefined'){
-        return item[this.displayProp];
-      }
-      else{
-        console.log("paper-countries: displayProp not set up");
-        return "";
-      }
+        return item[this._displayProp];
     },
     _getTestCandidate:function(item){
         var toTest = []
@@ -302,7 +336,7 @@
     },
     _search:function(term){
       if (term == ""){
-        this._setSuggestions([]);
+        this.setSuggestions([]);
         return;
       }
       var patt =  new RegExp(term.toLowerCase());
@@ -318,37 +352,31 @@
               matched.push(this._prefetchedCandidates[i]);
               break;
             }
-          }
+          } 
         }
         this._setSuggestions(matched);
     },
     _getDisplayIcon:function(item){
-      if (this.displayProp && typeof(this.displayProp) != 'undefined'){
             var flag =item.code.toLowerCase()+".svg";
-            var img = this.path+flag;          
+            var img = this._path+flag;          
             return img;
-      }
-      else{
-        console.log("paper-countries: displayProp not set up");
-        return "";
-      }
     },
     _dataChange : function(data){
       if(data&&data.hasOwnProperty("code")){
       var flag =data.code ? data.code.toLowerCase()+".svg":"";
-      if(flag) this.iconUrl = this.path+flag;
+      if(flag) this._iconUrl = this._path+flag;
       }
       if(!data){
-        this.iconUrl='';
+        this._iconUrl='';
       }
     },
-    calculation:function(selectedItem,suggestionsMenu){
+    _calculation:function(selectedItem,suggestionsMenu){
       if (typeof(selectedItem) != 'undefined'){
           var index = Number(suggestionsMenu.indexOf(selectedItem));
               this.inputObject = this.suggestions[index];
               this.inputValue = this._getDisplayValue(this.inputObject);
               var flag =this.inputObject.code.toLowerCase()+".svg";
-              this.iconUrl = this.path+flag;
+              this._iconUrl = this._path+flag;
               this.country = {
                 code:this.inputObject.code.toLowerCase(),
                 name:this.inputValue

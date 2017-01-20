@@ -9,7 +9,6 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 <html>
-
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1.0, user-scalable=yes">
@@ -32,24 +31,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
             <h1>paper-countries example</h1> 
             <h3>Below following example demonstrates paper-countries with max-suggestions 2</h3>
         </div>
-        <paper-countries max-suggestions="2" id="countryCode" country="[[country]]" input-value="[[country.name]]" display-prop="name"
+        <paper-countries max-suggestions="2" id="countryCode" country="[[country]]" input-value="[[country.name]]" 
             auto-validate="true" placeholder="Country">
         </paper-countries>
-        <h3>Below following example demonstrates paper-countries with max-suggestions 5</h3>
-        <paper-countries max-suggestions="5" id="countryCode2" country="[[country]]" input-value="[[country.name]]" display-prop="name"
-            auto-validate="true" placeholder="Country">
+        <h3>If max-suggastions not mentioned, by default it will show 5 suggastions in the dropdown.</h3>
+        <paper-countries id="countryCode2" country="[[country]]" input-value="[[country.name]]" auto-validate="true" placeholder="Country">
         </paper-countries>
          <h3>Below following example demonstrates paper-countries with required</h3>
-        <paper-countries max-suggestions="5" id="countryCode3" country="[[country]]" input-value="[[country.name]]" display-prop="name"
-            auto-validate="true" placeholder="Country" required="[[bool]]">
+        <paper-countries max-suggestions="5" id="countryCode3" country="[[country]]" input-value="[[country.name]]" auto-validate="true" placeholder="Country" required="[[bool]]">
         </paper-countries>
          <h3>Below following example demonstrates paper-countries with readonly</h3>
-        <paper-countries max-suggestions="5" id="countryCode4" country="[[country4]]" input-value="[[country4.name]]" display-prop="name"
-            auto-validate="true" placeholder="Country" readonly="[[readonly]]">
+        <paper-countries max-suggestions="5" id="countryCode4" country="[[country4]]" input-value="[[country4.name]]" auto-validate="true" placeholder="Country" readonly="[[readonly]]">
         </paper-countries>
         <h3>Below following example demonstrates paper-countries with disabled</h3>
-        <paper-countries max-suggestions="5" id="countryCode5" country="[[country4]]" input-value="[[country4.name]]" display-prop="name"
-            auto-validate="true" placeholder="Country" disabled="[[disabled]]">
+        <paper-countries max-suggestions="5" id="countryCode5" country="[[country4]]" input-value="[[country4.name]]" auto-validate="true" placeholder="Country" disabled="[[disabled]]">
         </paper-countries>
     </template>
 </body>
