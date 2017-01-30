@@ -27,7 +27,7 @@
     "paper-item": "^1.2.1",
     "iron-ajax": "^1.4.3",
     "paper-material": "^1.0.6",
-    "iron-component-page": "^1.1.8",
+    "iron-component-page": "^1.1.8"
   },
   "devDependencies": {
     "iron-demo-helpers": "^1.2.5",
