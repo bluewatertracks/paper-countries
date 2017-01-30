@@ -7,6 +7,7 @@
   <title>paper-timezone test</title>
   <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
   <script src="../../web-component-tester/browser.js"></script>
+  <script src="../../iron-test-helpers/mock-interactions.js"></script>
   <link rel="import" href="../paper-countries.html">
 </head>
 
@@ -25,6 +26,7 @@
       <paper-countries id="countryEle"></paper-countries>
     </template>
   </test-fixture>
+
   <script>
     suite('paper-countries properties', function () {
       var element = fixture('basic');
@@ -49,44 +51,41 @@
         var scope = document.querySelector('#custom-properties');
         scope.country = {
           name: "India",
-          code: "IN"
+          code: "in"
         };
         assert.isObject(scope.$.countryElement.country);
         assert.deepEqual(scope.$.countryElement.country, scope.country);
         assert.equal(scope.$.countryElement.$.input.value, scope.country.name);
       });
     });
-
-    /*suite('testing binding and suggestions', function () {
+    suite('testing binding and suggestions', function () {
       var advancedModeFixture;
       setup(function() {
         advancedModeFixture = fixture('advanced');
       });
       test('get 0 suggestions by entering `abcd` to input field', function(done) {
-          var dropdownInput = advancedModeFixture.$.input.querySelector('paper-input');
+          var dropdownInput = advancedModeFixture.$.input;
           dropdownInput.value = 'abcd';
           dropdownInput.addEventListener('keyup', function() {
-              assert.isArray(dropdownModeFixture.$.countryEle.suggestions);
-              assert.equal(dropdownModeFixture.$.countryEle.suggestions.length, 0);
+              assert.isArray(advancedModeFixture.suggestions);
+              assert.equal(advancedModeFixture.suggestions.length, 0);
               done();
           });
           MockInteractions.focus(dropdownInput);
           MockInteractions.pressAndReleaseKeyOn(dropdownInput, '65');
         });
-
         test('get 5 suggestions by entering `a` to input field', function(done) {
-          var dropdownInput = advancedModeFixture.$.countryEle.querySelector('paper-input');
-          dropdownInput.inputValue = 'a';
+          var dropdownInput = advancedModeFixture.$.input;
+          dropdownInput.value = 'a';
           dropdownInput.addEventListener('keyup', function() {
-              assert.isArray(advancedModeFixture.$.countryEle.suggestions);
-              assert.equal(advancedModeFixture.$.countryEle.suggestions.length, 5);
+              assert.isArray(advancedModeFixture.suggestions);
+              assert.equal(advancedModeFixture.suggestions.length, 5);
               done();
           });
           MockInteractions.focus(dropdownInput);
           MockInteractions.pressAndReleaseKeyOn(dropdownInput, '65');
         });
-    });*/
+    });
   </script>
 </body>
-
 </html>
