@@ -11,257 +11,9 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../polymer/polymer.html">
 <link rel="import" href="../paper-menu/paper-menu.html">
 <link rel="import" href="../paper-input/paper-input.html">
-<link rel="import" href="../iron-ajax/iron-ajax.html">
 <link rel="import" href="../paper-item/paper-item.html">
 <link rel="import" href="../paper-material/paper-material.html">
-<script>
-// Countries
-var countries = [
-  {name: 'Afghanistan', code: 'AF'},
-  {name: 'Aland Islands', code: 'AX'},
-  {name: 'Albania', code: 'AL'},
-  {name: 'Algeria', code: 'DZ'},
-  {name: 'American Samoa', code: 'AS'},
-  {name: 'Andorra', code: 'AD'},
-  {name: 'Angola', code: 'AO'},
-  {name: 'Anguilla', code: 'AI'},
-  {name: 'Antarctica', code: 'AQ'},
-  {name: 'Antigua and Barbuda', code: 'AG'},
-  {name: 'Argentina', code: 'AR'},
-  {name: 'Armenia', code: 'AM'},
-  {name: 'Aruba', code: 'AW'},
-  {name: 'Australia', code: 'AU'},
-  {name: 'Austria', code: 'AT'},
-  {name: 'Azerbaijan', code: 'AZ'},
-  {name: 'Bahamas', code: 'BS'},
-  {name: 'Bahrain', code: 'BH'},
-  {name: 'Bangladesh', code: 'BD'},
-  {name: 'Barbados', code: 'BB'},
-  {name: 'Belarus', code: 'BY'},
-  {name: 'Belgium', code: 'BE'},
-  {name: 'Belize', code: 'BZ'},
-  {name: 'Benin', code: 'BJ'},
-  {name: 'Bermuda', code: 'BM'},
-  {name: 'Bhutan', code: 'BT'},
-  {name: 'Bolivia', code: 'BO'},
-  {name: 'Bosnia and Herzegovina', code: 'BA'},
-  {name: 'Botswana', code: 'BW'},
-  {name: 'Bouvet Island', code: 'BV'},
-  {name: 'Brazil', code: 'BR'},
-  {name: 'British Indian Ocean Territory', code: 'IO'},
-  {name: 'Brunei Darussalam', code: 'BN'},
-  {name: 'Bulgaria', code: 'BG'},
-  {name: 'Burkina Faso', code: 'BF'},
-  {name: 'Burundi', code: 'BI'},
-  {name: 'Cambodia', code: 'KH'},
-  {name: 'Cameroon', code: 'CM'},
-  {name: 'Canada', code: 'CA'},
-  {name: 'Cape Verde', code: 'CV'},
-  {name: 'Cayman Islands', code: 'KY'},
-  {name: 'Central African Republic', code: 'CF'},
-  {name: 'Chad', code: 'TD'},
-  {name: 'Chile', code: 'CL'},
-  {name: 'China', code: 'CN'},
-  {name: 'Christmas Island', code: 'CX'},
-  {name: 'Cocos (Keeling) Islands', code: 'CC'},
-  {name: 'Colombia', code: 'CO'},
-  {name: 'Comoros', code: 'KM'},
-  {name: 'Congo', code: 'CG'},
-  {name: 'Congo, The Democratic Republic of the', code: 'CD'},
-  {name: 'Cook Islands', code: 'CK'},
-  {name: 'Costa Rica', code: 'CR'},
-  {name: 'Cote D\'Ivoire', code: 'CI'},
-  {name: 'Croatia', code: 'HR'},
-  {name: 'Cuba', code: 'CU'},
-  {name: 'Cyprus', code: 'CY'},
-  {name: 'Czech Republic', code: 'CZ'},
-  {name: 'Denmark', code: 'DK'},
-  {name: 'Djibouti', code: 'DJ'},
-  {name: 'Dominica', code: 'DM'},
-  {name: 'Dominican Republic', code: 'DO'},
-  {name: 'Ecuador', code: 'EC'},
-  {name: 'Egypt', code: 'EG'},
-  {name: 'El Salvador', code: 'SV'},
-  {name: 'Equatorial Guinea', code: 'GQ'},
-  {name: 'Eritrea', code: 'ER'},
-  {name: 'Estonia', code: 'EE'},
-  {name: 'Ethiopia', code: 'ET'},
-  {name: 'Falkland Islands (Malvinas)', code: 'FK'},
-  {name: 'Faroe Islands', code: 'FO'},
-  {name: 'Fiji', code: 'FJ'},
-  {name: 'Finland', code: 'FI'},
-  {name: 'France', code: 'FR'},
-  {name: 'French Guiana', code: 'GF'},
-  {name: 'French Polynesia', code: 'PF'},
-  {name: 'French Southern Territories', code: 'TF'},
-  {name: 'Gabon', code: 'GA'},
-  {name: 'Gambia', code: 'GM'},
-  {name: 'Georgia', code: 'GE'},
-  {name: 'Germany', code: 'DE'},
-  {name: 'Ghana', code: 'GH'},
-  {name: 'Gibraltar', code: 'GI'},
-  {name: 'Greece', code: 'GR'},
-  {name: 'Greenland', code: 'GL'},
-  {name: 'Grenada', code: 'GD'},
-  {name: 'Guadeloupe', code: 'GP'},
-  {name: 'Guam', code: 'GU'},
-  {name: 'Guatemala', code: 'GT'},
-  {name: 'Guernsey', code: 'GG'},
-  {name: 'Guinea', code: 'GN'},
-  {name: 'Guinea-Bissau', code: 'GW'},
-  {name: 'Guyana', code: 'GY'},
-  {name: 'Haiti', code: 'HT'},
-  {name: 'Heard Island and Mcdonald Islands', code: 'HM'},
-  {name: 'Holy See (Vatican City State)', code: 'VA'},
-  {name: 'Honduras', code: 'HN'},
-  {name: 'Hong Kong', code: 'HK'},
-  {name: 'Hungary', code: 'HU'},
-  {name: 'Iceland', code: 'IS'},
-  {name: 'India', code: 'IN'},
-  {name: 'Indonesia', code: 'ID'},
-  {name: 'Iran, Islamic Republic Of', code: 'IR'},
-  {name: 'Iraq', code: 'IQ'},
-  {name: 'Ireland', code: 'IE'},
-  {name: 'Isle of Man', code: 'IM'},
-  {name: 'Israel', code: 'IL'},
-  {name: 'Italy', code: 'IT'},
-  {name: 'Jamaica', code: 'JM'},
-  {name: 'Japan', code: 'JP'},
-  {name: 'Jersey', code: 'JE'},
-  {name: 'Jordan', code: 'JO'},
-  {name: 'Kazakhstan', code: 'KZ'},
-  {name: 'Kenya', code: 'KE'},
-  {name: 'Kiribati', code: 'KI'},
-  {name: 'Korea, Democratic People\'S Republic of', code: 'KP'},
-  {name: 'Korea, Republic of', code: 'KR'},
-  {name: 'Kuwait', code: 'KW'},
-  {name: 'Kyrgyzstan', code: 'KG'},
-  {name: 'Lao People\'S Democratic Republic', code: 'LA'},
-  {name: 'Latvia', code: 'LV'},
-  {name: 'Lebanon', code: 'LB'},
-  {name: 'Lesotho', code: 'LS'},
-  {name: 'Liberia', code: 'LR'},
-  {name: 'Libyan Arab Jamahiriya', code: 'LY'},
-  {name: 'Liechtenstein', code: 'LI'},
-  {name: 'Lithuania', code: 'LT'},
-  {name: 'Luxembourg', code: 'LU'},
-  {name: 'Macao', code: 'MO'},
-  {name: 'Macedonia, The Former Yugoslav Republic of', code: 'MK'},
-  {name: 'Madagascar', code: 'MG'},
-  {name: 'Malawi', code: 'MW'},
-  {name: 'Malaysia', code: 'MY'},
-  {name: 'Maldives', code: 'MV'},
-  {name: 'Mali', code: 'ML'},
-  {name: 'Malta', code: 'MT'},
-  {name: 'Marshall Islands', code: 'MH'},
-  {name: 'Martinique', code: 'MQ'},
-  {name: 'Mauritania', code: 'MR'},
-  {name: 'Mauritius', code: 'MU'},
-  {name: 'Mayotte', code: 'YT'},
-  {name: 'Mexico', code: 'MX'},
-  {name: 'Micronesia, Federated States of', code: 'FM'},
-  {name: 'Moldova, Republic of', code: 'MD'},
-  {name: 'Monaco', code: 'MC'},
-  {name: 'Mongolia', code: 'MN'},
-  {name: 'Montserrat', code: 'MS'},
-  {name: 'Morocco', code: 'MA'},
-  {name: 'Mozambique', code: 'MZ'},
-  {name: 'Myanmar', code: 'MM'},
-  {name: 'Namibia', code: 'NA'},
-  {name: 'Nauru', code: 'NR'},
-  {name: 'Nepal', code: 'NP'},
-  {name: 'Netherlands', code: 'NL'},
-  {name: 'Netherlands Antilles', code: 'AN'},
-  {name: 'New Caledonia', code: 'NC'},
-  {name: 'New Zealand', code: 'NZ'},
-  {name: 'Nicaragua', code: 'NI'},
-  {name: 'Niger', code: 'NE'},
-  {name: 'Nigeria', code: 'NG'},
-  {name: 'Niue', code: 'NU'},
-  {name: 'Norfolk Island', code: 'NF'},
-  {name: 'Northern Mariana Islands', code: 'MP'},
-  {name: 'Norway', code: 'NO'},
-  {name: 'Oman', code: 'OM'},
-  {name: 'Pakistan', code: 'PK'},
-  {name: 'Palau', code: 'PW'},
-  {name: 'Palestinian Territory, Occupied', code: 'PS'},
-  {name: 'Panama', code: 'PA'},
-  {name: 'Papua New Guinea', code: 'PG'},
-  {name: 'Paraguay', code: 'PY'},
-  {name: 'Peru', code: 'PE'},
-  {name: 'Philippines', code: 'PH'},
-  {name: 'Pitcairn', code: 'PN'},
-  {name: 'Poland', code: 'PL'},
-  {name: 'Portugal', code: 'PT'},
-  {name: 'Puerto Rico', code: 'PR'},
-  {name: 'Qatar', code: 'QA'},
-  {name: 'Reunion', code: 'RE'},
-  {name: 'Romania', code: 'RO'},
-  {name: 'Russian Federation', code: 'RU'},
-  {name: 'RWANDA', code: 'RW'},
-  {name: 'Saint Helena', code: 'SH'},
-  {name: 'Saint Kitts and Nevis', code: 'KN'},
-  {name: 'Saint Lucia', code: 'LC'},
-  {name: 'Saint Pierre and Miquelon', code: 'PM'},
-  {name: 'Saint Vincent and the Grenadines', code: 'VC'},
-  {name: 'Samoa', code: 'WS'},
-  {name: 'San Marino', code: 'SM'},
-  {name: 'Sao Tome and Principe', code: 'ST'},
-  {name: 'Saudi Arabia', code: 'SA'},
-  {name: 'Senegal', code: 'SN'},
-  {name: 'Serbia and Montenegro', code: 'CS'},
-  {name: 'Seychelles', code: 'SC'},
-  {name: 'Sierra Leone', code: 'SL'},
-  {name: 'Singapore', code: 'SG'},
-  {name: 'Slovakia', code: 'SK'},
-  {name: 'Slovenia', code: 'SI'},
-  {name: 'Solomon Islands', code: 'SB'},
-  {name: 'Somalia', code: 'SO'},
-  {name: 'South Africa', code: 'ZA'},
-  {name: 'South Georgia and the South Sandwich Islands', code: 'GS'},
-  {name: 'Spain', code: 'ES'},
-  {name: 'Sri Lanka', code: 'LK'},
-  {name: 'Sudan', code: 'SD'},
-  {name: 'Suriname', code: 'SR'},
-  {name: 'Svalbard and Jan Mayen', code: 'SJ'},
-  {name: 'Swaziland', code: 'SZ'},
-  {name: 'Sweden', code: 'SE'},
-  {name: 'Switzerland', code: 'CH'},
-  {name: 'Syrian Arab Republic', code: 'SY'},
-  {name: 'Taiwan, Province of China', code: 'TW'},
-  {name: 'Tajikistan', code: 'TJ'},
-  {name: 'Tanzania, United Republic of', code: 'TZ'},
-  {name: 'Thailand', code: 'TH'},
-  {name: 'Timor-Leste', code: 'TL'},
-  {name: 'Togo', code: 'TG'},
-  {name: 'Tokelau', code: 'TK'},
-  {name: 'Tonga', code: 'TO'},
-  {name: 'Trinidad and Tobago', code: 'TT'},
-  {name: 'Tunisia', code: 'TN'},
-  {name: 'Turkey', code: 'TR'},
-  {name: 'Turkmenistan', code: 'TM'},
-  {name: 'Turks and Caicos Islands', code: 'TC'},
-  {name: 'Tuvalu', code: 'TV'},
-  {name: 'Uganda', code: 'UG'},
-  {name: 'Ukraine', code: 'UA'},
-  {name: 'United Arab Emirates', code: 'AE'},
-  {name: 'United Kingdom', code: 'GB'},
-  {name: 'United States', code: 'US'},
-  {name: 'United States Minor Outlying Islands', code: 'UM'},
-  {name: 'Uruguay', code: 'UY'},
-  {name: 'Uzbekistan', code: 'UZ'},
-  {name: 'Vanuatu', code: 'VU'},
-  {name: 'Venezuela', code: 'VE'},
-  {name: 'Viet Nam', code: 'VN'},
-  {name: 'Virgin Islands, British', code: 'VG'},
-  {name: 'Virgin Islands, U.S.', code: 'VI'},
-  {name: 'Wallis and Futuna', code: 'WF'},
-  {name: 'Western Sahara', code: 'EH'},
-  {name: 'Yemen', code: 'YE'},
-  {name: 'Zambia', code: 'ZM'},
-  {name: 'Zimbabwe', code: 'ZW'}
-];
-</script>
+<script src="/src/countries.js"></script>
 <!--
 
 `<paper-countries>` is a typeahead component based on Polymer thats provides user with a sleek way of selecting a country or countries.
@@ -297,10 +49,15 @@ If you want to save it in bower.json file, remember to add flag --save
 <dom-module id="paper-countries">
     <template>
         <style>
-             :host {
+            :host {
                 display: block;
                 box-sizing: border-box;
             }
+
+            .container {
+              position:relative;
+            }
+
             paper-material {
                 left: 0;
                 right: 0;
@@ -312,7 +69,12 @@ If you want to save it in bower.json file, remember to add flag --save
                 cursor: pointer;
             }
 
-             .countrycode::first-letter {
+            paper-item:hover {
+                background: #E0E0E0;
+                font-weight: bold;
+            }
+
+            .countrycode::first-letter {
                 visibility: hidden;
             }
 
@@ -343,27 +105,38 @@ If you want to save it in bower.json file, remember to add flag --save
                 background-size: contain;
                 background-position: 50%;
                 background-repeat: no-repeat;
-                position: relative;
+                position: absolute;
                 display: inline-block;
                 width: 100px;
                 height: 30px;
             }
         </style>
-        <div style="position:relative;">
-            <paper-input id="input"  value="{{inputValue}}" country={{country}} on-keyup="_keyup" on-keydown="_keydown" label="{{placeholder}}"
-                always-float-label="{{alwaysFloatLabel}}" autofocus="{{autofocus}}" disabled="{{disabled}}"
-                error-message="{{errorMessage}}" no-label-float="{{noLabelFloat}}"
-                readonly="{{readonly}}" required="{{required}}" auto-validate="{{autoValidate}}" >
+        <div class="container">
+            <paper-input 
+              id="input" 
+              value="{{inputValue}}" 
+              on-keyup="_keyup" 
+              on-keydown="_keydown" 
+              label="[[label]]"
+              always-float-label="{{alwaysFloatLabel}}" 
+              autofocus="[[autofocus]]" 
+              disabled="[[disabled]]"
+              error-message="[[errorMessage]]" 
+              no-label-float="[[noLabelFloat]]"
+              readonly="[[readonly]]" 
+              placeholder="[[placeholder]]"
+              required="[[required]]" 
+              auto-validate="[[autoValidate]]" >
             </paper-input>
-            <span id="inputIcon" class="flag-icon" style$="background-image:url([[_iconUrl]]);right:-25px;position:absolute;top:16px;"></span>
-            <template is="dom-if" if="{{suggestions.length}}" >
+            <span id="inputIcon" class="flag-icon" style$="background-image:url([[_iconUrl]]);right:-25px;top:16px;"></span>
+            <template is="dom-if" if="[[_suggestions.length]]" >
                 <paper-material>
-                    <paper-menu on-iron-select="_itemSelect" >
-                        <template is="dom-repeat" items="{{suggestions}}">
-                                <paper-item on-mouseover="_selection" on-tap="_select">
-                                    <span>{{_getDisplayValue(item)}}</span>
-                                    <span class="flag-icon" style$="background-image:url({{_getDisplayIcon(item)}});right: -20px;position:absolute;"></span>
-                                </paper-item>
+                    <paper-menu>
+                        <template is="dom-repeat" items="[[_suggestions]]">
+                            <paper-item on-tap="_selectItem">
+                                <span>[[_getDisplayValue(item)]]</span>
+                                <span class="flag-icon" style$="background-image:url([[_getDisplayIcon(item)]]);right: -20px;"></span>
+                            </paper-item>
                         </template>
                     </paper-menu>
                 </paper-material>
@@ -377,111 +150,133 @@ If you want to save it in bower.json file, remember to add flag --save
 
     is: 'paper-countries',
     properties: {
-      label:{
-        type:String,
-        value:'Country'
+      /**
+       * The label for paper-countries 
+       */
+      label: {
+        type: String,
+        value: 'Country'
       },
-      required:{
-        type:Boolean,
-        value:false
+
+      /**
+       * Set to true to mark the paper-countries as required.
+       */
+      required: {
+        type: Boolean,
+        value: false
       },
+
+      /**
+       * A placeholder string in addition to the label which is shown in paper-countries input field like default value
+       */
       placeholder:{
-        type:String,
-        value:'Please Enter country name'
+        type: String,
+        value: 'Please, enter country name'
+      },
+
+      /**
+       * Maximum number of suggestions to show as dropdown list.
+       */
+      maxSuggestions: {
+        type: Number,
+        value: 5
+      },
+
+      /**
+       * Paper-countries input value.
+       */
+      inputValue: {
+        type: String,
+        notify: true
+      },
+
+      /**
+       * Set to true to always float the label on paper-countries. 
+       */
+      alwaysFloatLabel: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * Bind this to the <paper-input>'s autofocus property.
+       */
+      autofocus: {
+        type: Boolean,
+        value: false
+      },
+
+      /**
+       * Set to true to disable paper-countries.
+       */
+      disabled: {
+        type: Boolean,
+        value: false
       },
       /**
-      * The prefetched candidates get by prefetchUrl
-      */
-      _prefetchedCandidates:{
-        type:Array,
-        value:countries
+       * The error message to display when the input is invalid. 
+       */
+      errorMessage: {
+        type: String
+      },
+      /**
+       * Set to true to disable the floating label.
+       */
+      noLabelFloat: {
+        type: Boolean,
+        value: false
+      },
+      /**
+       * Set to true to set paper-countries in readonly mode
+       */
+      readonly: {
+        type: Boolean,
+        value: false 
+      },
+      /**
+       * Set to true to auto-validate the input value.
+       */
+      autoValidate: {
+        type: Boolean,
+        value: false
+      },
+      /**
+       * Property which hold country object with name and country flag
+       */
+      country: {
+        type: Object,
+        notify: true,
+        observer: "_dataChange"
+      },
+      /**
+       * The prefetched candidates hold all countries
+       */
+      _prefetchedCandidates: {
+        type: Array,
+        value: countries
       },
       /**
        * Internal variable holding all matched suggestions.
        */
-      suggestions:{
-        type:Array,
-        readOnly:true,
-        value:[]
-      },
-      /**
-       * Maximum number of suggestions to show up in countrycode.
-       */
-      maxSuggestions:{
-        type:Number,
-        value:5
+      _suggestions: {
+        type: Array
       },
 
       /**
-        * The property in json object that should be chosen for the paper-input value when an element is selected from the suggestions.
-        * This property only makes sense when property isCandidatesJson set to be true.
-        */
-      _displayProp:{
-        type:String,
-        value:"name"
+       * The property in json object that should be chosen for the paper-input value when an element is selected from the suggestions.
+       */
+      _displayProp: {
+        type: String,
+        value: "name"
       },
-
-      /**
-       * Input value.
-       */
-      inputValue:{
-        type:String,
-        notify:true
+      _iconUrl: {
+        type: String
       },
-      /**
-       * Input object.
-       */
-      inputObject:{
-        type:Object,
-        notify:true
-      },
-      /**
-       * Bind this to the <paper-input>'s alwaysFloatLabel property.
-       */
-      alwaysFloatLabel:Boolean,
-      /**
-       * Bind this to the <paper-input>'s autofocus property.
-       */
-      autofocus:Boolean,
-      /**
-       * Bind this to the <paper-input>'s disabled property.
-       */
-      disabled:Boolean,
-      /**
-       * Bind this to the <paper-input>'s errorMessage property.
-       */
-      errorMessage:String,
-      /**
-       * Bind this to the <paper-input>'s noLabelFloat property.
-       */
-      noLabelFloat:{
-        type:Boolean,
-        value:false
-      },
-      /**
-       * Bind this to the <paper-input>'s readonly property.
-       */
-      readonly:Boolean,
-      /**
-       * Bind this to the <paper-input>'s autoValidate property.
-       */
-      autoValidate:Boolean,
-      _iconUrl:String,
-      country:{
-        type:Object,
-        notify:true,
-        observer: "_dataChange"
-      },
-      _path:{
-        type:String,
-        value:"../icons/"
+      _path: {
+        type: String,
+        value: "/icons/"
       }
     },
-
-    _itemSelect:function(e, detail){
-      this.fire('pt-item-select',detail);
-    },
-    // Element Behavior
     /**
      * Callback for keydown event
      *
@@ -496,144 +291,107 @@ If you want to save it in bower.json file, remember to add flag --save
       }
     },
     /**
-     * Callback on mouseover event on paper-item
-     *
-     */
-    _selection:function(e){
-      var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
-      if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
-        var selectedItem = e.currentTarget;
-        index = Number(suggestionsMenu.indexOf(selectedItem));
-        suggestionsMenu.select(index);
-        var input = Polymer.dom(this.root).querySelector('paper-input');
-        input.$.input.focus();
-      }
-      else{
-        console.log("suggestionsMenu not defined");
-      }
-    },
-    /**
-     * Callback on click event on paper-item
-     */
-    _select: function(e) {
-      var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
-      if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
-        var selectedItem = e.currentTarget;
-        this._calculation(selectedItem,suggestionsMenu);
-        e.stopPropagation();
-      }
-      else{
-        console.log("suggestionsMenu not defined");
-      }
-    },
-    /**
      * Callback for keyup event
      *
      * @param {e} event
      */
     _keyup: function(e) {
+      var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
+      var paperInput = Polymer.dom(this.root).querySelector('paper-input');
       if (e.which == 40){
-        //down button
-        var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
-        var selectedItem = suggestionsMenu.focusedItem;
-        var index = 0;
-        if (typeof(selectedItem) != 'undefined'){
-          index = Number(suggestionsMenu.indexOf(selectedItem));
-          index = Math.min(index + 1, this.suggestions.length - 1);
-        }
-        suggestionsMenu.select(index);
-        var input = Polymer.dom(this.root).querySelector('paper-input');
-        input.$.input.focus();
+        this._downButtonAction(suggestionsMenu, paperInput);
       }
       else if (e.which == 38){
-        //up
-        var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
+        this._upButtonAction(suggestionsMenu, paperInput);
+      }
+      else if (e.which == 13) {
         var selectedItem = suggestionsMenu.focusedItem;
-        if (typeof(selectedItem) != 'undefined'){
-          index = Number(suggestionsMenu.indexOf(selectedItem));
-          index = Math.max(index - 1, -1);
-          suggestionsMenu.select(index);
-        }
-        var input = Polymer.dom(this.root).querySelector('paper-input');
-        input.$.input.focus();
-      }
-      else if (e.which == 13){
-        var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
-        if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
-          var selectedItem = suggestionsMenu.focusedItem;
-          this._calculation(selectedItem,suggestionsMenu);
-        }
-      }
-      else if (e.which == 9){
-        //prevent fire search for tab key
+        this._setSelectedItem(selectedItem, suggestionsMenu);
       }
       else{
-        var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
-        if (suggestionsMenu && typeof(suggestionsMenu) != 'undefined'){
+        if (suggestionsMenu){
           suggestionsMenu.select(-1);
         }
-        this._search(this.inputValue.trim());
+        this._searchCountries(this.inputValue.trim());
       }
     },
-    _getDisplayValue:function(item){
+    _upButtonAction: function(menuList, inputElement) {
+      var selectedItem = menuList.focusedItem, index = 0;
+      if (selectedItem) {
+        index = Number(menuList.indexOf(selectedItem));
+        index = Math.max(index - 1, -1);
+      }
+      menuList.select(index);
+      inputElement.$.input.focus();
+    },
+    _downButtonAction: function(menuList, inputElement) {
+      var selectedItem = menuList.focusedItem, index = 0;
+      if (selectedItem) {
+        index = Number(menuList.indexOf(selectedItem));
+        index = Math.min(index + 1, this._suggestions.length - 1);
+      }
+      menuList.select(index);
+      inputElement.$.input.focus();
+    },
+    /**
+     * Callback for click event on paper-item which hold suggestions for query
+     */
+    _selectItem: function(e) {
+      var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
+      if (suggestionsMenu) {
+        var selectedItem = e.currentTarget;
+        this._setSelectedItem(selectedItem, suggestionsMenu);
+        e.stopPropagation();
+      }
+    },
+    _getDisplayValue: function(item){
         return item[this._displayProp];
     },
-    _getTestCandidate:function(item){
-        var toTest = []
-        toTest.push(item.name);
-        return toTest;
+    _getDisplayIcon: function(item){
+      var flag = item.code.toLowerCase()+".svg";
+      var iconPath = this._path+flag;
+      return iconPath;
     },
-    _search:function(term){
-      if (term == ""){
-        this._setSuggestions([]);
+    _searchCountries: function(query){
+      if (query == ""){
+        this.set('_suggestions', []);
         return;
       }
-      var patt =  new RegExp(term.toLowerCase());
-      var matched = [];
-        for (var i = 0; i < this._prefetchedCandidates.length; i ++){
-          if (matched.length == this.maxSuggestions){
-            break;
-          }
-          var toTest = this._getTestCandidate(this._prefetchedCandidates[i]);
-          for (var j = 0; j < toTest.length; j ++){
-            var item = toTest[j];
-            if (patt.test(item.toLowerCase()) == true){
-              matched.push(this._prefetchedCandidates[i]);
-              break;
-            }
-          }
+      var pattern = new RegExp(query.toLowerCase()), matched = [], country;
+      for (var i = 0; i < this._prefetchedCandidates.length; i++) {
+        country = this._prefetchedCandidates[i];
+        if (matched.length == this.maxSuggestions) {
+          break;
         }
-        this._setSuggestions(matched);
-    },
-    _getDisplayIcon:function(item){
-            var flag =item.code.toLowerCase()+".svg";
-            var img = this._path+flag;
-            return img;
-    },
-    _dataChange : function(data){
-      if(data&&data.hasOwnProperty("code")){
-          var flag =data.code ? data.code.toLowerCase()+".svg":"";
-          if(flag) this._iconUrl = this._path+flag;
-          this.inputValue = data.name;
+        var countryName = country.name.toLowerCase();
+        if (pattern.test(countryName)) {
+          matched.push(country);
+          continue;
+        }
       }
-      if(!data){
-        this._iconUrl='';
+      this.set('_suggestions', matched);
+    },
+    _dataChange: function(data) {
+      if (data && data.code) {
+        var flag = data.code.toLowerCase()+".svg";
+        this._iconUrl = this._path + flag;
+      } else {
+        this._iconUrl = '';
       }
     },
-    _calculation:function(selectedItem,suggestionsMenu){
-      if (typeof(selectedItem) != 'undefined'){
-          var index = Number(suggestionsMenu.indexOf(selectedItem));
-              this.inputObject = this.suggestions[index];
-              this.inputValue = this._getDisplayValue(this.inputObject);
-              var flag =this.inputObject.code.toLowerCase()+".svg";
-              this._iconUrl = this._path+flag;
-              this.country = {
-                code:this.inputObject.code.toLowerCase(),
-                name:this.inputValue
-              };
-            this._setSuggestions([]);
-            this.fire('pt-item-confirmed',selectedItem);
-      }
+    _setSelectedItem: function(selectedItem, suggestionsMenu){
+      var index = Number(suggestionsMenu.indexOf(selectedItem));
+      var selectedCountry = this._suggestions[index];
+      var countryName = this._getDisplayValue(selectedCountry);
+      var countryCode = selectedCountry.code.toLowerCase();
+      this.inputValue = countryName;
+      var flagName = countryCode + ".svg";
+      this._iconUrl = this._path + flagName;
+      this.country = {
+        code: countryCode,
+        name: countryName
+      };
+      this.set('_suggestions', []);   
     }
   });
 </script>
