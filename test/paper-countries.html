@@ -1,0 +1,92 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, minimum-scale=1, initial-scale=1, user-scalable=yes">
+  <title>paper-timezone test</title>
+  <script src="../../webcomponentsjs/webcomponents-lite.js"></script>
+  <script src="../../web-component-tester/browser.js"></script>
+  <link rel="import" href="../paper-countries.html">
+</head>
+
+<body>
+  <test-fixture id="basic">
+    <template>
+      <paper-countries></paper-countries>
+    </template>
+  </test-fixture>
+  <template is="dom-bind" id="custom-properties">
+    <paper-countries id="countryElement" country="[[country]]"></paper-countries>
+  </template>
+
+  <test-fixture id="advanced">
+    <template>
+      <paper-countries id="countryEle"></paper-countries>
+    </template>
+  </test-fixture>
+  <script>
+    suite('paper-countries properties', function () {
+      var element = fixture('basic');
+      test('instantiating the element works', function () {
+        assert.equal(element.is, 'paper-countries');
+      });
+      test('get default label attribute', function () {
+        assert.isString(element.label);
+        assert.equal(element.label, "Country");
+      });
+      test('get default required attribute', function () {
+        assert.isBoolean(element.required);
+        assert.deepEqual(element.required, false);
+      });
+
+      test('get default max-suggestions', function () {
+        assert.isNumber(element.maxSuggestions);
+        assert.deepEqual(element.maxSuggestions, 5);
+      });
+
+      test('bind to country', function () {
+        var scope = document.querySelector('#custom-properties');
+        scope.country = {
+          name: "India",
+          code: "IN"
+        };
+        assert.isObject(scope.$.countryElement.country);
+        assert.deepEqual(scope.$.countryElement.country, scope.country);
+        assert.equal(scope.$.countryElement.$.input.value, scope.country.name);
+      });
+    });
+
+    /*suite('testing binding and suggestions', function () {
+      var advancedModeFixture;
+      setup(function() {
+        advancedModeFixture = fixture('advanced');
+      });
+      test('get 0 suggestions by entering `abcd` to input field', function(done) {
+          var dropdownInput = advancedModeFixture.$.input.querySelector('paper-input');
+          dropdownInput.value = 'abcd';
+          dropdownInput.addEventListener('keyup', function() {
+              assert.isArray(dropdownModeFixture.$.countryEle.suggestions);
+              assert.equal(dropdownModeFixture.$.countryEle.suggestions.length, 0);
+              done();
+          });
+          MockInteractions.focus(dropdownInput);
+          MockInteractions.pressAndReleaseKeyOn(dropdownInput, '65');
+        });
+
+        test('get 5 suggestions by entering `a` to input field', function(done) {
+          var dropdownInput = advancedModeFixture.$.countryEle.querySelector('paper-input');
+          dropdownInput.inputValue = 'a';
+          dropdownInput.addEventListener('keyup', function() {
+              assert.isArray(advancedModeFixture.$.countryEle.suggestions);
+              assert.equal(advancedModeFixture.$.countryEle.suggestions.length, 5);
+              done();
+          });
+          MockInteractions.focus(dropdownInput);
+          MockInteractions.pressAndReleaseKeyOn(dropdownInput, '65');
+        });
+    });*/
+  </script>
+</body>
+
+</html>

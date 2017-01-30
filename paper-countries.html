@@ -8,12 +8,12 @@ Code distributed by Google as part of the polymer project is also
 subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
 -->
 
-<link rel="import" href="bower_components/polymer/polymer.html">
-<link rel="import" href="bower_components/paper-menu/paper-menu.html">
-<link rel="import" href="bower_components/paper-input/paper-input.html">
-<link rel="import" href="bower_components/iron-ajax/iron-ajax.html">
-<link rel="import" href="bower_components/paper-item/paper-item.html">
-<link rel="import" href="bower_components/paper-material/paper-material.html">
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../iron-ajax/iron-ajax.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-material/paper-material.html">
 <script>
 // Countries
 var countries = [
@@ -381,7 +381,10 @@ If you want to save it in bower.json file, remember to add flag --save
         type:String,
         value:'Country'
       },
-      required:Boolean,
+      required:{
+        type:Boolean,
+        value:false
+      },
       placeholder:{
         type:String,
         value:'Please Enter country name'
@@ -471,7 +474,7 @@ If you want to save it in bower.json file, remember to add flag --save
       },
       _path:{
         type:String,
-        value:"./icons"
+        value:"../icons/"
       }
     },
 
@@ -582,7 +585,7 @@ If you want to save it in bower.json file, remember to add flag --save
     },
     _search:function(term){
       if (term == ""){
-        this.setSuggestions([]);
+        this._setSuggestions([]);
         return;
       }
       var patt =  new RegExp(term.toLowerCase());
@@ -609,8 +612,9 @@ If you want to save it in bower.json file, remember to add flag --save
     },
     _dataChange : function(data){
       if(data&&data.hasOwnProperty("code")){
-      var flag =data.code ? data.code.toLowerCase()+".svg":"";
-      if(flag) this._iconUrl = this._path+flag;
+          var flag =data.code ? data.code.toLowerCase()+".svg":"";
+          if(flag) this._iconUrl = this._path+flag;
+          this.inputValue = data.name;
       }
       if(!data){
         this._iconUrl='';
