@@ -26,10 +26,12 @@
     "paper-menu": "^1.2.2",
     "paper-item": "^1.2.1",
     "iron-ajax": "^1.4.3",
-    "paper-material": "^1.0.6"
+    "paper-material": "^1.0.6",
+    "iron-component-page": "^1.1.8",
   },
   "devDependencies": {
-    "iron-component-page": "PolymerElements/iron-component-page#^1.1.8",
-    "iron-demo-helpers": "PolymerElements/iron-demo-helpers#^1.2.5"
+    "iron-demo-helpers": "^1.2.5",
+    "web-component-tester": "^5.0.0",
+    "iron-test-helpers": "^1.4.0"
   }
 }
