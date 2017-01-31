@@ -47,6 +47,11 @@
         assert.deepEqual(element.maxSuggestions, 5);
       });
 
+      test('get default url path for icons', function(){
+        assert.isString(element._path);
+        assert.deepEqual(element._path, "/icons/");
+      });
+      
       test('bind to country', function () {
         var scope = document.querySelector('#custom-properties');
         scope.country = {
@@ -56,8 +61,14 @@
         assert.isObject(scope.$.countryElement.country);
         assert.deepEqual(scope.$.countryElement.country, scope.country);
         assert.equal(scope.$.countryElement.$.input.value, scope.country.name);
+        var backgroundImage = scope.$.countryElement.$.inputIcon.style.backgroundImage;
+        var elementPath = element._path;
+        assert.isAbove(backgroundImage.indexOf(elementPath),-1);
+        assert.isAbove(backgroundImage.split('.svg').length,0);
+        assert.deepEqual(scope.$.countryElement._iconUrl,elementPath+"in.svg");
       });
     });
+
     suite('testing binding and suggestions', function () {
       var advancedModeFixture;
       setup(function() {
@@ -67,8 +78,8 @@
           var dropdownInput = advancedModeFixture.$.input;
           dropdownInput.value = 'abcd';
           dropdownInput.addEventListener('keyup', function() {
-              assert.isArray(advancedModeFixture.suggestions);
-              assert.equal(advancedModeFixture.suggestions.length, 0);
+              assert.isArray(advancedModeFixture._suggestions);
+              assert.equal(advancedModeFixture._suggestions.length, 0);
               done();
           });
           MockInteractions.focus(dropdownInput);
@@ -78,8 +89,8 @@
           var dropdownInput = advancedModeFixture.$.input;
           dropdownInput.value = 'a';
           dropdownInput.addEventListener('keyup', function() {
-              assert.isArray(advancedModeFixture.suggestions);
-              assert.equal(advancedModeFixture.suggestions.length, 5);
+              assert.isArray(advancedModeFixture._suggestions);
+              assert.equal(advancedModeFixture._suggestions.length, 5);
               done();
           });
           MockInteractions.focus(dropdownInput);
