@@ -246,7 +246,7 @@ If you want to save it in bower.json file, remember to add flag --save
       country: {
         type: Object,
         notify: true,
-        observer: "_dataChange"
+        observer: "_countryChange"
       },
       /**
        * The prefetched candidates hold all countries
@@ -371,11 +371,11 @@ If you want to save it in bower.json file, remember to add flag --save
       }
       this.set('_suggestions', matched);
     },
-    _dataChange: function(data) {
-      if (data && data.code) {
-        var flag = data.code.toLowerCase()+".svg";
+    _countryChange: function(country) {
+      if (country && country.code) {
+        var flag = country.code.toLowerCase()+".svg";
         this._iconUrl = this._path + flag;
-        this.inputValue = data.name;
+        this.inputValue = country.name;
       } else {
         this._iconUrl = '';
       }
