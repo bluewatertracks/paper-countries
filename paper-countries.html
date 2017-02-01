@@ -69,11 +69,6 @@ If you want to save it in bower.json file, remember to add flag --save
                 cursor: pointer;
             }
 
-            paper-item:hover {
-                background: #E0E0E0;
-                font-weight: bold;
-            }
-
             .countrycode::first-letter {
                 visibility: hidden;
             }
@@ -118,7 +113,7 @@ If you want to save it in bower.json file, remember to add flag --save
               on-keyup="_keyup" 
               on-keydown="_keydown" 
               label="[[label]]"
-              always-float-label="{{alwaysFloatLabel}}" 
+              always-float-label="[[alwaysFloatLabel]]" 
               autofocus="[[autofocus]]" 
               disabled="[[disabled]]"
               error-message="[[errorMessage]]" 
@@ -133,7 +128,7 @@ If you want to save it in bower.json file, remember to add flag --save
                 <paper-material>
                     <paper-menu>
                         <template is="dom-repeat" items="[[_suggestions]]">
-                            <paper-item on-tap="_selectItem">
+                            <paper-item on-mouseover="_mouseMoveAction" on-tap="_selectItem">
                                 <span>[[_getDisplayValue(item)]]</span>
                                 <span class="flag-icon" style$="background-image:url([[_getDisplayIcon(item)]]);right: -20px;"></span>
                             </paper-item>
@@ -313,6 +308,20 @@ If you want to save it in bower.json file, remember to add flag --save
           suggestionsMenu.select(-1);
         }
         this._searchCountries(this.inputValue.trim());
+      }
+    },
+    /**
+     * Callback on mouseover event on paper-item
+     * @param {e} event
+     */
+    _mouseMoveAction: function (e) {
+      var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
+      if (suggestionsMenu) {
+        var selectedItem = e.currentTarget;
+        var index = Number(suggestionsMenu.indexOf(selectedItem));
+        suggestionsMenu.select(index);
+        var inputElement = Polymer.dom(this.root).querySelector('paper-input');
+        inputElement.focus();
       }
     },
     _upButtonAction: function(menuList, inputElement) {
