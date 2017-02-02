@@ -16,18 +16,18 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <script src="/src/countries.js"></script>
 <!--
 
-`<paper-countries>` is a typeahead component based on Polymer thats provides user with a sleek way of selecting a country or countries.
+`<paper-countries>` is a typeahead component based on Polymer thats provides user with a sleek way of selecting a country from a prefetched list.
 
     <paper-countries country="[[country]]" input-value="[[country.name]]" auto-validate="true" placeholder="Country"></paper-countries>
 
-The label that will show up as the label for tags input. It not specified, defualt Country will be displayed. In this case max-suggestions set to 2.
+The label that will show up as the label for tags input. It not specified, the defualt Country will be displayed. In this case max-suggestions set to 2.
 
-It also have extra feature like showing no of suggestions in dropdown. By default value is 5.
+It also allows limiting the no of suggestions in the dropdown. By default value is 5.
 
     <paper-countries max-suggestions="2"  country="[[country]]" input-value="[[country.name]]" auto-validate="true" placeholder="Country">
 
-
-A `paper-countries` can use the country property to set country name in the dropdown along with the country flag
+A `paper-countries` can use the country property to set country name in the dropdown along with the country flag.
+The result of selected output looks like `{ code: AU, name: Australia }`
 
 ### Styling
 
@@ -107,20 +107,20 @@ If you want to save it in bower.json file, remember to add flag --save
             }
         </style>
         <div class="container">
-            <paper-input 
-              id="input" 
-              value="{{inputValue}}" 
-              on-keyup="_keyup" 
-              on-keydown="_keydown" 
+            <paper-input
+              id="input"
+              value="{{inputValue}}"
+              on-keyup="_keyup"
+              on-keydown="_keydown"
               label="[[label]]"
-              always-float-label="[[alwaysFloatLabel]]" 
-              autofocus="[[autofocus]]" 
+              always-float-label="[[alwaysFloatLabel]]"
+              autofocus="[[autofocus]]"
               disabled="[[disabled]]"
-              error-message="[[errorMessage]]" 
+              error-message="[[errorMessage]]"
               no-label-float="[[noLabelFloat]]"
-              readonly="[[readonly]]" 
+              readonly="[[readonly]]"
               placeholder="[[placeholder]]"
-              required="[[required]]" 
+              required="[[required]]"
               auto-validate="[[autoValidate]]" >
             </paper-input>
             <span id="inputIcon" class="flag-icon" style$="background-image:url([[_iconUrl]]);right:-25px;top:16px;"></span>
@@ -146,7 +146,7 @@ If you want to save it in bower.json file, remember to add flag --save
     is: 'paper-countries',
     properties: {
       /**
-       * The label for paper-countries 
+       * The label for paper-countries
        */
       label: {
         type: String,
@@ -186,7 +186,7 @@ If you want to save it in bower.json file, remember to add flag --save
       },
 
       /**
-       * Set to true to always float the label on paper-countries. 
+       * Set to true to always float the label on paper-countries.
        */
       alwaysFloatLabel: {
         type: Boolean,
@@ -209,7 +209,7 @@ If you want to save it in bower.json file, remember to add flag --save
         value: false
       },
       /**
-       * The error message to display when the input is invalid. 
+       * The error message to display when the input is invalid.
        */
       errorMessage: {
         type: String
@@ -226,7 +226,7 @@ If you want to save it in bower.json file, remember to add flag --save
        */
       readonly: {
         type: Boolean,
-        value: false 
+        value: false
       },
       /**
        * Set to true to auto-validate the input value.
@@ -367,26 +367,22 @@ If you want to save it in bower.json file, remember to add flag --save
         return;
       }
       var pattern = new RegExp(query.toLowerCase()), matched = [], country;
-      for (var i = 0; i < this._prefetchedCandidates.length; i++) {
-        country = this._prefetchedCandidates[i];
-        if (matched.length == this.maxSuggestions) {
-          break;
+      this._prefetchedCandidates.forEach(function (country) {
+        if(matched.length < this.maxSuggestions) {
+          var countryName = country.name.toLowerCase();
+          if (pattern.test(countryName)) {
+            matched.push(country);
+          }
         }
-        var countryName = country.name.toLowerCase();
-        if (pattern.test(countryName)) {
-          matched.push(country);
-          continue;
-        }
-      }
+      }.bind(this));
       this.set('_suggestions', matched);
     },
     _countryChange: function(country) {
+      this._iconUrl = '';
       if (country && country.code) {
         var flag = country.code.toLowerCase()+".svg";
         this._iconUrl = this._path + flag;
         this.inputValue = country.name;
-      } else {
-        this._iconUrl = '';
       }
     },
     _setSelectedItem: function(selectedItem, suggestionsMenu){
@@ -401,7 +397,7 @@ If you want to save it in bower.json file, remember to add flag --save
         code: countryCode,
         name: countryName
       };
-      this.set('_suggestions', []);   
+      this.set('_suggestions', []);
     }
   });
 </script>

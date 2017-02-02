@@ -38,7 +38,7 @@ To run the demo locally, install using the installation command above and  then,
 ![@dhrytsenko](https://avatars0.githubusercontent.com/u/12988041?v=3&s=80)
 ![@bhargavkonkathi](https://avatars2.githubusercontent.com/u/24550636?v=3&u=ddd3f64f6888100d6eebd283768b61dabc6f495d&s=80)
 
-[@maisnamraju](http://github.com/maisnamraju)   [@dhrytsenko](http://github.com//dhrytsenko)  [@bhargavkonkathi](http://github.com//bhargavkonkathi)
+[@maisnamraju](http://github.com/maisnamraju)   [@dhrytsenko](http://github.com/dhrytsenko)  [@bhargavkonkathi](http://github.com/bhargavkonkathi)
 
 
 ## Pull Requests are welcome
