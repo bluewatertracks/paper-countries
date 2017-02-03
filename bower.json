@@ -3,7 +3,10 @@
   "version": "1.0.0",
   "homepage": "https://github.com/bluewatertracks/paper-countries",
   "authors": [
-    "Blue Water tracks"
+    "Raju Maisnam",
+    "Dmytro Hrytsenko",
+    "Bhargav Konkathi",
+    "Blue Water Tracks Team"
   ],
   "description": "Country flag dropdown",
   "main": "paper-countries.html",
