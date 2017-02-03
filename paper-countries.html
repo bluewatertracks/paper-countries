@@ -13,6 +13,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-item/paper-item.html">
 <link rel="import" href="../paper-material/paper-material.html">
+<link rel="import" href="flag-icons-styles.html">
 <script src="src/countries.js"></script>
 <!--
 
@@ -48,6 +49,7 @@ If you want to save it in bower.json file, remember to add flag --save
 -->
 <dom-module id="paper-countries">
     <template>
+        <style include="flag-icons-styles"></style>
         <style>
             :host {
                 display: block;
@@ -105,6 +107,15 @@ If you want to save it in bower.json file, remember to add flag --save
                 width: 100px;
                 height: 30px;
             }
+
+            #inputIcon {
+              right: -25px; 
+              top: 16px;
+            }
+
+            .menu-icon {
+              right: -20px;
+            }
         </style>
         <div class="container">
             <paper-input
@@ -123,14 +134,14 @@ If you want to save it in bower.json file, remember to add flag --save
               required="[[required]]"
               auto-validate="[[autoValidate]]" >
             </paper-input>
-            <span id="inputIcon" class="flag-icon" style$="background-image:url([[_iconUrl]]);right:-25px;top:16px;"></span>
+            <span id="inputIcon" class$="flag-icon flag-icon-[[_getCountryCode(country.code)]]"></span>
             <template is="dom-if" if="[[_suggestions.length]]" >
                 <paper-material>
                     <paper-menu>
                         <template is="dom-repeat" items="[[_suggestions]]">
                             <paper-item on-mouseover="_mouseMoveAction" on-tap="_selectItem">
                                 <span>[[_getDisplayValue(item)]]</span>
-                                <span class="flag-icon" style$="background-image:url([[_getDisplayIcon(item)]]);right: -20px;"></span>
+                                <span class$="flag-icon menu-icon flag-icon-[[_getCountryCode(item.code)]]"></span>
                             </paper-item>
                         </template>
                     </paper-menu>
@@ -263,13 +274,6 @@ If you want to save it in bower.json file, remember to add flag --save
       _displayProp: {
         type: String,
         value: "name"
-      },
-      _iconUrl: {
-        type: String
-      },
-      _path: {
-        type: String,
-        value: "icons/"
       }
     },
     /**
@@ -354,12 +358,10 @@ If you want to save it in bower.json file, remember to add flag --save
       }
     },
     _getDisplayValue: function(item){
-        return item[this._displayProp];
+      return item[this._displayProp];
     },
-    _getDisplayIcon: function(item){
-      var flag = item.code.toLowerCase()+".svg";
-      var iconPath = this._path+flag;
-      return iconPath;
+    _getCountryCode: function(countryCode){
+      return countryCode ? countryCode.toLowerCase() : '';
     },
     _searchCountries: function(query){
       if (query == ""){
@@ -378,10 +380,7 @@ If you want to save it in bower.json file, remember to add flag --save
       this.set('_suggestions', matched);
     },
     _countryChange: function(country) {
-      this._iconUrl = '';
-      if (country && country.code) {
-        var flag = country.code.toLowerCase()+".svg";
-        this._iconUrl = this._path + flag;
+      if (country && country.name) {
         this.inputValue = country.name;
       }
     },
@@ -391,8 +390,6 @@ If you want to save it in bower.json file, remember to add flag --save
       var countryName = this._getDisplayValue(selectedCountry);
       var countryCode = selectedCountry.code.toLowerCase();
       this.inputValue = countryName;
-      var flagName = countryCode + ".svg";
-      this._iconUrl = this._path + flagName;
       this.country = {
         code: countryCode,
         name: countryName

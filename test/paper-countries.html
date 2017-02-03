@@ -47,11 +47,6 @@
         assert.deepEqual(element.maxSuggestions, 5);
       });
 
-      test('get default url path for icons', function(){
-        assert.isString(element._path);
-        assert.deepEqual(element._path, "/icons/");
-      });
-      
       test('bind to country', function () {
         var scope = document.querySelector('#custom-properties');
         scope.country = {
@@ -62,10 +57,7 @@
         assert.deepEqual(scope.$.countryElement.country, scope.country);
         assert.equal(scope.$.countryElement.$.input.value, scope.country.name);
         var backgroundImage = scope.$.countryElement.$.inputIcon.style.backgroundImage;
-        var elementPath = element._path;
-        assert.isAbove(backgroundImage.indexOf(elementPath),-1);
-        assert.isAbove(backgroundImage.split('.svg').length,0);
-        assert.deepEqual(scope.$.countryElement._iconUrl,elementPath+"in.svg");
+        assert.isAbove(backgroundImage.split('.svg').length, 0);
       });
     });
 
