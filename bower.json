@@ -1,6 +1,6 @@
 {
   "name": "paper-countries",
-  "version": "1.0.3",
+  "version": "1.0.4",
   "homepage": "https://github.com/bluewatertracks/paper-countries",
   "authors": [
     "Raju Maisnam",
@@ -11,9 +11,12 @@
   "description": "Country flag dropdown",
   "main": "paper-countries.html",
   "keywords": [
+    "polymer",
+    "web-component",
+    "web-components",
     "paper-countries",
-    "country-flag-dropdown",
-    "webcomponent"
+    "country-flags",
+    "country-flags-dropdown"
   ],
   "license": "MIT",
   "ignore": [
