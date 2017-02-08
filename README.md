@@ -1,5 +1,23 @@
 # paper-countries
 
+## Example 
+
+<!--
+```
+<custom-element-demo>
+  <template>
+    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
+    <link rel="import" href="paper-countries.html">
+    <next-code-block></next-code-block>
+  </template>
+</custom-element-demo>
+```
+-->
+```html
+
+<paper-countries label="Country name" placeholder="Enter country name..."></paper-countries>
+```
+
 ## About
  paper-countries is a typeahead component based on Polymer; it allows users to select a country from a list. Think of it as a fun and interactive version of the select input field. We at Blue Water Tracks developed it because we were bored with the usual dropdowns selects fields and wanted to something that was fun using Polymer.
 
@@ -13,7 +31,7 @@ The element can be installed using bower
 
     bower install paper-countries
 
-If you want to save it in bower.json file, remember to add flag --save
+If you want to save it in bower.json file, remember to add flag `--save`
 
 	bower install --save paper-countries
 
