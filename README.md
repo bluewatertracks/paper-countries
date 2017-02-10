@@ -3,7 +3,6 @@
 # paper-countries
 
 <paper-countries label="Country name" placeholder="Enter country name..."></paper-countries>
-```
 
 ## About
  paper-countries is a typeahead component based on Polymer; it allows users to select a country from a list. Think of it as a fun and interactive version of the select input field. We at Blue Water Tracks developed it because we were bored with the usual dropdowns selects fields and wanted to something that was fun using Polymer.
