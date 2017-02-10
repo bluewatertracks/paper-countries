@@ -13,6 +13,7 @@
       <style>
         paper-countries {
            height: 330px;
+	   overflow:hidden;
         }
       </style>
       <next-code-block></next-code-block>
