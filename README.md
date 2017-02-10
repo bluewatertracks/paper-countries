@@ -12,7 +12,7 @@
       <link rel="import" href="paper-countries.html">
       <style>
         paper-countries {
-           height: 200px;
+           height: 330px;
         }
       </style>
       <next-code-block></next-code-block>
