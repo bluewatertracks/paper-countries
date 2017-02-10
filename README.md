@@ -2,21 +2,6 @@
 
 # paper-countries
 
-## Example 
-
-<!--
-```
-<custom-element-demo>
-  <template>
-    <script src="../webcomponentsjs/webcomponents-lite.js"></script>
-    <link rel="import" href="paper-countries.html">
-    <next-code-block></next-code-block>
-  </template>
-</custom-element-demo>
-```
--->
-```html
-
 <paper-countries label="Country name" placeholder="Enter country name..."></paper-countries>
 ```
 
