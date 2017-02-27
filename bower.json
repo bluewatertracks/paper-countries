@@ -1,6 +1,6 @@
 {
   "name": "paper-countries",
-  "version": "1.0.8",
+  "version": "2.0.0",
   "homepage": "https://github.com/bluewatertracks/paper-countries",
   "authors": [
     "Raju Maisnam",
@@ -35,7 +35,8 @@
     "iron-ajax": "^1.4.3",
     "paper-material": "^1.0.6",
     "iron-component-page": "^1.1.8",
-    "webcomponentsjs": "^0.7.23"
+    "webcomponentsjs": "^0.7.23",
+    "iron-form-element-behavior": "PolymerElements/iron-form-element-behavior#^1.0.6"
   },
   "devDependencies": {
     "iron-demo-helpers": "^1.2.5",

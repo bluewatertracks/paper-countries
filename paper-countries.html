@@ -13,19 +13,20 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-item/paper-item.html">
 <link rel="import" href="../paper-material/paper-material.html">
+<link rel="import" href="../iron-form-element-behavior/iron-form-element-behavior.html">
 <link rel="import" href="flag-icons-styles.html">
 <script src="src/countries.js"></script>
 <!--
 
 `<paper-countries>` is a typeahead component based on Polymer thats provides user with a sleek way of selecting a country from a prefetched list.
 
-    <paper-countries country="[[country]]" input-value="[[country.name]]" auto-validate="true" placeholder="Country"></paper-countries>
+    <paper-countries country="[[country]]" value="[[country.name]]" auto-validate="true" placeholder="Country"></paper-countries>
 
-The label that will show up as the label for tags input. It not specified, the defualt Country will be displayed. In this case max-suggestions set to 2.
+The label that will show up as the label for tags input. It not specified, the default Country will be displayed. In this case max-suggestions set to 2.
 
 It also allows limiting the no of suggestions in the dropdown. By default value is 5.
 
-    <paper-countries max-suggestions="2"  country="[[country]]" input-value="[[country.name]]" auto-validate="true" placeholder="Country">
+    <paper-countries max-suggestions="2"  country="[[country]]" value="[[country.name]]" auto-validate="true" placeholder="Country">
 
 A `paper-countries` can use the country property to set country name in the dropdown along with the country flag.
 The result of selected output looks like `{ code: AU, name: Australia }`
@@ -120,7 +121,7 @@ If you want to save it in bower.json file, remember to add flag --save
         <div class="container">
             <paper-input
               id="input"
-              value="{{inputValue}}"
+              value="{{value}}"
               on-keyup="_keyup"
               on-keydown="_keydown"
               label="[[label]]"
@@ -191,7 +192,7 @@ If you want to save it in bower.json file, remember to add flag --save
       /**
        * Paper-countries input value.
        */
-      inputValue: {
+      value: {
         type: String,
         notify: true
       },
@@ -276,6 +277,9 @@ If you want to save it in bower.json file, remember to add flag --save
         value: "name"
       }
     },
+    behaviors: [
+      Polymer.IronFormElementBehavior
+    ],
     /**
      * Callback for keydown event
      *
@@ -311,7 +315,7 @@ If you want to save it in bower.json file, remember to add flag --save
         if (suggestionsMenu){
           suggestionsMenu.select(-1);
         }
-        this._searchCountries(this.inputValue.trim());
+        this._searchCountries(this.value.trim());
       }
     },
     /**
@@ -381,7 +385,7 @@ If you want to save it in bower.json file, remember to add flag --save
     },
     _countryChange: function(country) {
       if (country && country.name) {
-        this.inputValue = country.name;
+        this.value = country.name;
       }
     },
     _setSelectedItem: function(selectedItem, suggestionsMenu){
@@ -389,7 +393,7 @@ If you want to save it in bower.json file, remember to add flag --save
       var selectedCountry = this._suggestions[index];
       var countryName = this._getDisplayValue(selectedCountry);
       var countryCode = selectedCountry.code.toLowerCase();
-      this.inputValue = countryName;
+      this.value = countryName;
       this.country = {
         code: countryCode,
         name: countryName
