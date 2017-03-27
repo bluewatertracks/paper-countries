@@ -82,7 +82,7 @@ If you want to save it in bower.json file, remember to add flag --save
                 font-size: 16px;
                 font-weight: 400;
                 line-height: 24px;
-                color: #737373;
+                color: #b2b2b2;
             }
 
             .countrycode-with-label {
@@ -119,6 +119,7 @@ If you want to save it in bower.json file, remember to add flag --save
             }
         </style>
         <div class="container">
+          <p class$="countrycode {{_getClasses(noLabelFloat)}}">{{_getAutoDisplay(_suggestion)}}</p>
             <paper-input
               id="input"
               value="{{value}}"
@@ -133,7 +134,9 @@ If you want to save it in bower.json file, remember to add flag --save
               readonly="[[readonly]]"
               placeholder="[[placeholder]]"
               required="[[required]]"
-              auto-validate="[[autoValidate]]" >
+              auto-validate="[[autoValidate]]" 
+              on-focusout="_autoselect"
+              >
             </paper-input>
             <span id="inputIcon" class$="flag-icon flag-icon-[[_getCountryCode(country.code)]]"></span>
             <template is="dom-if" if="[[_suggestions.length]]" >
@@ -266,7 +269,8 @@ If you want to save it in bower.json file, remember to add flag --save
        * Internal variable holding all matched suggestions.
        */
       _suggestions: {
-        type: Array
+        type: Array,
+        value:[]
       },
 
       /**
@@ -275,11 +279,35 @@ If you want to save it in bower.json file, remember to add flag --save
       _displayProp: {
         type: String,
         value: "name"
+      },
+       _selected:{
+        type:Boolean,
+        value:false
       }
     },
     behaviors: [
       Polymer.IronFormElementBehavior
     ],
+
+    focus: function() {
+      var input = Polymer.dom(this.root).querySelector('paper-input');
+      input.focus();
+    },
+
+    _getAutoDisplay:function(_suggestion){
+      var input = _suggestion ;
+      if (input != "" && typeof(_suggestion) != 'undefined' && _suggestion !='') {
+        return input.substring(0,1) + _suggestion.substring(1);
+      }
+      return "";
+    },
+
+    _getClasses:function(noLabelFloat){
+      if (noLabelFloat && typeof(noLabelFloat) != 'undefined' && noLabelFloat == true) {
+        return "countrycode-without-label";
+      }
+      return "countrycode-with-label";
+    },  
     /**
      * Callback for keydown event
      *
@@ -292,6 +320,16 @@ If you want to save it in bower.json file, remember to add flag --save
       else if (e.which == 8) {
          this.$.inputIcon.setAttribute("class","flag-icon");
       }
+      else if(e.which==9){    // Handiling when user presses tab key
+        if(this._suggestion){
+          this.country = {
+            code:this._suggestionCode ,
+            name:this._suggestion
+          };
+          this._selected = true;
+          this.set('_suggestions', []);
+        }
+      } 
     },
     /**
      * Callback for keyup event
@@ -302,20 +340,24 @@ If you want to save it in bower.json file, remember to add flag --save
       var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-menu');
       var paperInput = Polymer.dom(this.root).querySelector('paper-input');
       if (e.which == 40){
+        this.focus();
         this._downButtonAction(suggestionsMenu, paperInput);
       }
       else if (e.which == 38){
+        this.focus();
         this._upButtonAction(suggestionsMenu, paperInput);
       }
       else if (e.which == 13) {
         var selectedItem = suggestionsMenu.focusedItem;
         this._setSelectedItem(selectedItem, suggestionsMenu);
       }
-      else{
+      else if (e.which >=65 && e.which <=90 || e.which>=97 && e.which <= 122 || e.which == 8 || e.which == 46){
+        this._selected =false;
+        this.$.inputIcon.setAttribute("class","flag-icon");
         if (suggestionsMenu){
           suggestionsMenu.select(-1);
-        }
-        this._searchCountries(this.value.trim());
+        } 
+        this._searchCountries(this.$.input.value.trim());
       }
     },
     /**
@@ -328,8 +370,7 @@ If you want to save it in bower.json file, remember to add flag --save
         var selectedItem = e.currentTarget;
         var index = Number(suggestionsMenu.indexOf(selectedItem));
         suggestionsMenu.select(index);
-        var inputElement = Polymer.dom(this.root).querySelector('paper-input');
-        inputElement.focus();
+        this.focus();
       }
     },
     _upButtonAction: function(menuList, inputElement) {
@@ -339,7 +380,7 @@ If you want to save it in bower.json file, remember to add flag --save
         index = Math.max(index - 1, -1);
       }
       menuList.select(index);
-      inputElement.$.input.focus();
+      this.focus();
     },
     _downButtonAction: function(menuList, inputElement) {
       var selectedItem = menuList.focusedItem, index = 0;
@@ -348,7 +389,7 @@ If you want to save it in bower.json file, remember to add flag --save
         index = Math.min(index + 1, this._suggestions.length - 1);
       }
       menuList.select(index);
-      inputElement.$.input.focus();
+      this.focus();
     },
     /**
      * Callback for click event on paper-item which hold suggestions for query
@@ -370,6 +411,8 @@ If you want to save it in bower.json file, remember to add flag --save
     _searchCountries: function(query){
       if (query == ""){
         this.set('_suggestions', []);
+        this.country={};
+        this._updateSuggestion();
         return;
       }
       var pattern = new RegExp(query.toLowerCase()), matched = [], country;
@@ -382,10 +425,17 @@ If you want to save it in bower.json file, remember to add flag --save
         }
       }.bind(this));
       this.set('_suggestions', matched);
+      this._updateSuggestion();
+      if(this._suggestions.length<1&&this.$.input.value&&!this._suggestion){
+           this.$.input.invalid =true;
+           this.$.input.errorMessage = this.errorMessage || "Please select valid country";
+        }
     },
     _countryChange: function(country) {
       if (country && country.name) {
         this.value = country.name;
+        this._selected = true;
+        this.set('_suggestions', []);
       }
     },
     _setSelectedItem: function(selectedItem, suggestionsMenu){
@@ -398,7 +448,62 @@ If you want to save it in bower.json file, remember to add flag --save
         code: countryCode,
         name: countryName
       };
+      this._selected=true;
+      this._suggestion="";
       this.set('_suggestions', []);
+    },
+    _autoselect:function(e){
+        var countryVal = this.$.input.value.trim();
+        var self = this;  
+        // Need to check if length is zero ,  
+        if(!this._selected && this._suggestions.length<1&&this.inputValue){
+              this.focus();
+              this.country ={};
+              this._selected=false;
+              this.$.input.invalid =true;
+              this.$.input.errorMessage = this.errorMessage || "Please select valid country";
+              return;
+        }
+        this._suggestions.forEach(function (country) {
+            if(country.name.toLowerCase() == countryVal.toLowerCase()){
+               this.country = {
+                code: country.code,
+                name: country.name
+              };
+               this.set('_suggestions', []);
+               this.$.input.invalid =false;
+               this._selected=true;
+               this._suggestion="";
+            }else{
+              this._selected=false;
+              this.country ={};
+            }
+      }.bind(this));
+    },
+
+    _updateSuggestion: function() {
+      if (this._suggestions.length == 0){
+        this._suggestion = "";
+        return;
+      }
+      var firstSuggestion = this._suggestions[0].name;
+      if (this.$.input.value == "") {
+        this._suggestion = "";
+        return;
+      }
+      if (firstSuggestion.toLowerCase().indexOf(this.$.input.value.toLowerCase())!=0) {
+        this._suggestion = "";
+        return;
+      }
+      this._suggestion = firstSuggestion;
+      this._suggestionCode =this._suggestions[0].code;
+    },
+    reset:function(){
+      this.set('_suggestions', []);
+      this.$.input.invalid =true;
+      this._selected=false;
+      this.$.input.errorMessage = "Please select valid country" ;
+      this.focus();
     }
   });
 </script>
