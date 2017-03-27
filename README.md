@@ -56,7 +56,7 @@ Check out the [getting started guide](http://bluewatertracks.github.io/paper-con
 
 [Documentation and Demo](http://bluewatertracks.github.io/paper-countries/components/paper-countries/)
 
-To run the demo locally, install using the installation command above and  then, go into the components folder and run ```polymer serve```    
+To run the demo locally, install using the installation command above and then go into the components folder and run ```polymer serve```    
 
 ## Contributors
 
@@ -68,7 +68,7 @@ To run the demo locally, install using the installation command above and  then,
 |
 
 ## Pull Requests are welcome
-If you feel that you have something that could improve the component, please feel free to send a PR or create an issue with an explaination.
+If you feel that you have something that could improve the component, please feel free to send a PR or create an issue with an explanation.
 
 ## License
 
