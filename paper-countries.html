@@ -472,11 +472,14 @@ If you want to save it in bower.json file, remember to add flag --save
               };
                this.set('_suggestions', []);
                this.$.input.invalid =false;
-               this._selected=true;
+               //this._selected=true; //not necessary. it will be changed when change country property (_countryChange)
                this._suggestion="";
             }else{
-              this._selected=false;
-              this.country ={};
+                //should stop after 'country.name.toLowerCase() == countryVal.toLowerCase()'
+                if(!this._selected){
+                    //this._selected=false; //not necessary.
+                    this.country = {};
+                }
             }
       }.bind(this));
     },
