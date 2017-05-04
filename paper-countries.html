@@ -351,7 +351,7 @@ If you want to save it in bower.json file, remember to add flag --save
         var selectedItem = suggestionsMenu.focusedItem;
         this._setSelectedItem(selectedItem, suggestionsMenu);
       }
-      else if (e.which >=65 && e.which <=90 || e.which>=97 && e.which <= 122 || e.which == 8 || e.which == 46){
+      else if (e.which >=65 && e.which <=90 || e.which>=97 && e.which <= 122 || e.which == 8 || e.which == 46 || e.which ==229){
         this._selected =false;
         this.$.inputIcon.setAttribute("class","flag-icon");
         if (suggestionsMenu){
