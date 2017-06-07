@@ -243,4 +243,4 @@
   {name: 'Yemen', dial_code: '+967', code: 'YE'},
   {name: 'Zambia', dial_code: '+260', code: 'ZM'},
   {name: 'Zimbabwe', dial_code: '+263', code: 'ZW'},
-]
+];
