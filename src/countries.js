@@ -238,7 +238,7 @@
   {name: 'Venezuela, Bolivarian Republic of', dial_code: '+58', code: 'VE'},
   {name: 'Viet Nam', dial_code: '+84', code: 'VN'},
   {name: 'Virgin Islands, British', dial_code: '+1 284', code: 'VG'},
-  {name: 'Virgin Islands, U.S.', dial_code: '+1 340', code: 'VI'}
+  {name: 'Virgin Islands, U.S.', dial_code: '+1 340', code: 'VI'},
   {name: 'Wallis and Futuna', dial_code: '+681', code: 'WF'},
   {name: 'Yemen', dial_code: '+967', code: 'YE'},
   {name: 'Zambia', dial_code: '+260', code: 'ZM'},
