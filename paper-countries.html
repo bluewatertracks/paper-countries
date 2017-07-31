@@ -323,7 +323,7 @@ If you want to save it in bower.json file, remember to add flag --save
       else if(e.which==9){    // Handiling when user presses tab key
         if(this._suggestion){
           this.country = {
-            code:this._suggestionCode ,
+            code:this._suggestionCode.toLowerCase() ,
             name:this._suggestion
           };
           this._selected = true;
@@ -467,7 +467,7 @@ If you want to save it in bower.json file, remember to add flag --save
         this._suggestions.forEach(function (country) {
             if(country.name.toLowerCase() == countryVal.toLowerCase()){
                this.country = {
-                code: country.code,
+                code: country.code.toLowerCase(),
                 name: country.name
               };
                this.set('_suggestions', []);
