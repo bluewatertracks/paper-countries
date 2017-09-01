@@ -342,10 +342,9 @@ If you want to save it in bower.json file, remember to add flag --save
       }
       else if (keyCode == TAB) {
         if (this._suggestion) {
-          this.country = {
-            code: this._suggestionCode,
-            name: this._suggestion,
-          };
+          const code = this._suggestionCode.toLowerCase();
+          const name = this._suggestion;
+          this.country = {code, name};
           this._selected = true;
           this.set('_suggestions', []);
         }
