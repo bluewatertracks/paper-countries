@@ -141,7 +141,7 @@ If you want to save it in bower.json file, remember to add flag --save
             <span id="inputIcon" class$="flag-icon flag-icon-[[_getCountryCode(country.code)]]"></span>
             <template is="dom-if" if="[[_suggestions.length]]" >
                 <paper-material>
-                    <paper-listbox>
+                    <paper-listbox id="listbox">
                         <template is="dom-repeat" items="[[_suggestions]]">
                             <paper-item on-mouseover="_mouseMoveAction" on-tap="_selectItem">
                                 <span>[[_getDisplayValue(item)]]</span>
@@ -155,11 +155,22 @@ If you want to save it in bower.json file, remember to add flag --save
     </template>
 </dom-module>
 <script>
-
+(function() {
   /* global countries */
-  var selectValidCountry = 'Please select valid country.';
-  Polymer({
+  const selectValidCountry = 'Please select valid country.';
+  const DOWN_ARROW = 40;
+  const UP_ARROW = 38;
+  const BACKSPACE = 8;
+  const DELETE = 46;
+  const TAB = 9;
+  const ENTER = 13;
+  const A = 65;
+  const Z = 90;
+  const NUM_0 = 96;
+  const F11 = 122;
+  const DEAD_KEY = 229;
 
+  Polymer({
     is: 'paper-countries',
     properties: {
       /**
@@ -295,13 +306,14 @@ If you want to save it in bower.json file, remember to add flag --save
     ],
 
     focus: function() {
-      var input = this.$.input;
-      input.focus();
+      this.$.input.focus();
     },
 
     _getAutoDisplay: function(_suggestion) {
-      var input = _suggestion;
-      if (input != '' && typeof(_suggestion) != 'undefined' && _suggestion !='') {
+      const input = _suggestion;
+      if (input != '' &&
+          typeof(_suggestion) != 'undefined' &&
+          _suggestion !='') {
         return input.substring(0, 1) + _suggestion.substring(1);
       }
       return '';
@@ -321,13 +333,14 @@ If you want to save it in bower.json file, remember to add flag --save
      * @param {Event} e
      */
     _keydown: function(e) {
-      if (e.which == 40 || e.which == 38) {
-          e.preventDefault();
+      const keyCode = this._getKeyCode(e);
+      if (keyCode == DOWN_ARROW || keyCode == UP_ARROW) {
+        e.preventDefault();
       }
-      else if (e.which == 8) {
-         this.$.inputIcon.setAttribute('class', 'flag-icon');
+      else if (keyCode == BACKSPACE) {
+        this.$.inputIcon.setAttribute('class', 'flag-icon');
       }
-      else if (e.which==9) { // Handiling when user presses tab key
+      else if (keyCode == TAB) {
         if (this._suggestion) {
           this.country = {
             code: this._suggestionCode,
@@ -339,33 +352,35 @@ If you want to save it in bower.json file, remember to add flag --save
       }
     },
 
+    _getKeyCode: (e) => e.which ||
+                        e.keyCode && parseInt(e.keyCode) ||
+                        e.code && parseInt(e.code),
+
     /**
      * Callback for keyup event
      *
      * @param {Event} e
      */
     _keyup: function(e) {
-      var keyCode = e.which ||
-                    e.keyCode && parseInt(e.keyCode) ||
-                    e.code && parseInt(e.code);
-      var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-listbox');
-      var paperInput = Polymer.dom(this.root).querySelector('paper-input');
-      if (keyCode == 40) { // down arrow
+      const keyCode = this._getKeyCode(e);
+      const suggestionsMenu = Polymer.dom(this.root).querySelector('#listbox');
+      const paperInput = Polymer.dom(this.root).querySelector('paper-input');
+      if (keyCode == DOWN_ARROW) {
         this.focus();
         this._downButtonAction(suggestionsMenu, paperInput);
       }
-      else if (keyCode == 38) { // up arrow
+      else if (keyCode == UP_ARROW) {
         this.focus();
         this._upButtonAction(suggestionsMenu, paperInput);
       }
-      else if (keyCode == 13) { // enter
-        var selectedItem = suggestionsMenu.focusedItem;
+      else if (keyCode == ENTER) {
+        const selectedItem = suggestionsMenu.focusedItem;
         this._setSelectedItem(selectedItem, suggestionsMenu);
       }
-      else if (keyCode >= 65 && keyCode <= 90 || // a to z
-               keyCode >= 97 && keyCode <= 122 || // numpad and f keys
-               keyCode == 8 || keyCode == 46 || // backspace or delete
-               keyCode == 229) { // dead key
+      else if (keyCode >= A && keyCode <= Z || // a to z
+               keyCode >= NUM_0 && keyCode <= F11 || // numpad and f keys
+               keyCode == BACKSPACE || keyCode == DELETE || // backspace or delete
+               keyCode == DEAD_KEY) { // dead key
         this._selected =false;
         this.$.inputIcon.setAttribute('class', 'flag-icon');
         if (suggestionsMenu) {
@@ -380,17 +395,18 @@ If you want to save it in bower.json file, remember to add flag --save
      * @param {Event} e
      */
     _mouseMoveAction: function(e) {
-      var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-listbox');
+      const suggestionsMenu = Polymer.dom(this.root).querySelector('#listbox');
       if (suggestionsMenu) {
-        var selectedItem = e.currentTarget;
-        var index = Number(suggestionsMenu.indexOf(selectedItem));
+        const selectedItem = e.currentTarget;
+        const index = Number(suggestionsMenu.indexOf(selectedItem));
         suggestionsMenu.select(index);
         this.focus();
       }
     },
+
     _upButtonAction: function(menuList, inputElement) {
-      var selectedItem = menuList.focusedItem;
-      var index = 0;
+      const selectedItem = menuList.focusedItem;
+      let index = 0;
       if (selectedItem) {
         index = Number(menuList.indexOf(selectedItem));
         index = Math.max(index - 1, -1);
@@ -398,9 +414,10 @@ If you want to save it in bower.json file, remember to add flag --save
       menuList.select(index);
       this.focus();
     },
+
     _downButtonAction: function(menuList, inputElement) {
-      var selectedItem = menuList.focusedItem;
-      var index = 0;
+      const selectedItem = menuList.focusedItem;
+      let index = 0;
       if (selectedItem) {
         index = Number(menuList.indexOf(selectedItem));
         index = Math.min(index + 1, this._suggestions.length - 1);
@@ -414,7 +431,7 @@ If you want to save it in bower.json file, remember to add flag --save
      * @param {Event} e
      */
     _selectItem: function(e) {
-      var suggestionsMenu = Polymer.dom(this.root).querySelector('paper-listbox');
+      const suggestionsMenu = Polymer.dom(this.root).querySelector('#listbox');
       if (suggestionsMenu) {
         var selectedItem = e.currentTarget;
         this._setSelectedItem(selectedItem, suggestionsMenu);
@@ -437,22 +454,23 @@ If you want to save it in bower.json file, remember to add flag --save
         this._updateSuggestion();
         return;
       }
-      var pattern = new RegExp(query.toLowerCase());
-      var matched = [];
-      this._prefetchedCandidates.forEach(function(country) {
+      const pattern = new RegExp(query.toLowerCase());
+      const matched = [];
+      this._prefetchedCandidates.forEach((country) => {
         if (matched.length < this.maxSuggestions) {
-          var countryName = country.name.toLowerCase();
-          if (pattern.test(countryName)) {
+          if (pattern.test(country.name.toLowerCase())) {
             matched.push(country);
           }
         }
-      }.bind(this));
+      });
       this.set('_suggestions', matched);
       this._updateSuggestion();
-      if (this._suggestions.length<1&&this.$.input.value&&!this._suggestion) {
-           this.$.input.invalid =true;
-           this.$.input.errorMessage = this.errorMessage || selectValidCountry;
-        }
+      if (this._suggestions.length < 1 &&
+          this.$.input.value &&
+          !this._suggestion) {
+        this.$.input.invalid =true;
+        this.$.input.errorMessage = this.errorMessage || selectValidCountry;
+      }
     },
 
     _countryChange: function(country) {
@@ -464,72 +482,71 @@ If you want to save it in bower.json file, remember to add flag --save
     },
 
     _setSelectedItem: function(selectedItem, suggestionsMenu) {
-      var index = Number(suggestionsMenu.indexOf(selectedItem));
-      var selectedCountry = this._suggestions[index];
-      var countryName = this._getDisplayValue(selectedCountry);
-      var countryCode = selectedCountry.code.toLowerCase();
-      this.value = countryName;
-      this.country = {
-        code: countryCode,
-        name: countryName,
-      };
+      const index = Number(suggestionsMenu.indexOf(selectedItem));
+      const selectedCountry = this._suggestions[index];
+      const name = this._getDisplayValue(selectedCountry);
+      const code = selectedCountry.code.toLowerCase();
+      this.value = name;
+      this.country = {code, name};
       this._selected = true;
       this._suggestion = '';
       this.set('_suggestions', []);
     },
 
     _autoselect: function(e) {
-        var countryVal = this.$.input.value.trim();
-        // Need to check if length is zero ,
-        if (!this._selected && this._suggestions.length<1&&this.inputValue) {
-              this.focus();
-              this.country ={};
-              this._selected=false;
-              this.$.input.invalid =true;
-              this.$.input.errorMessage = this.errorMessage || selectValidCountry;
-              return;
+      const countryVal = this.$.input.value.trim();
+      // Need to check if length is zero ,
+      if (!this._selected &&
+          this._suggestions.length < 1 &&
+          this.inputValue) {
+        this.focus();
+        this.country = {};
+        this._selected = false;
+        this.$.input.invalid = true;
+        this.$.input.errorMessage = this.errorMessage ||
+                                    selectValidCountry;
+        return;
+      }
+      this._suggestions.forEach((country) => {
+        if (country.name.toLowerCase() == countryVal.toLowerCase()) {
+           this.country = {
+            code: country.code,
+            name: country.name,
+          };
+           this.set('_suggestions', []);
+           this.$.input.invalid = false;
+           this._suggestion = '';
+           return;
+        } else if (!this._selected) {
+          this.country = {};
         }
-        this._suggestions.forEach(function(country) {
-            if (country.name.toLowerCase() == countryVal.toLowerCase()) {
-               this.country = {
-                code: country.code,
-                name: country.name,
-              };
-               this.set('_suggestions', []);
-               this.$.input.invalid =false;
-               this._suggestion = '';
-               return;
-            } else if (!this._selected) {
-                  // this._selected=false; //not necessary.
-                  this.country = {};
-              }
-      }.bind(this));
+      });
     },
 
     _updateSuggestion: function() {
       if (this._suggestions.length == 0) {
-        this._suggestion = '';
-        return;
+        return this._suggestion = '';
       }
-      var firstSuggestion = this._suggestions[0].name;
+      const firstSuggestion = this._suggestions[0].name;
       if (this.$.input.value == '') {
-        this._suggestion = '';
-        return;
+        return this._suggestion = '';
       }
-      if (firstSuggestion.toLowerCase()
-          .indexOf(this.$.input.value.toLowerCase())!=0) {
-        this._suggestion = '';
-        return;
+      const inputLower = this.$.input.value.toLowerCase();
+      const suggestionLower = firstSuggestion.toLowerCase();
+      if (!suggestionLower.includes(inputLower)) {
+        return this._suggestion = '';
       }
       this._suggestion = firstSuggestion;
       this._suggestionCode = this._suggestions[0].code;
     },
+
     reset: function() {
       this.set('_suggestions', []);
-      this.$.input.invalid =true;
-      this._selected=false;
+      this.$.input.invalid = true;
+      this._selected = false;
       this.$.input.errorMessage = selectValidCountry;
       this.focus();
     },
   });
+}());
 </script>
