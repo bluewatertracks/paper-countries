@@ -9,7 +9,7 @@ subject to an additional IP rights grant found at http://polymer.github.io/PATEN
 -->
 
 <link rel="import" href="../polymer/polymer.html">
-<link rel="import" href="../paper-menu/paper-menu.html">
+<link rel="import" href="../paper-listbox/paper-listbox.html">
 <link rel="import" href="../paper-input/paper-input.html">
 <link rel="import" href="../paper-item/paper-item.html">
 <link rel="import" href="../paper-material/paper-material.html">
@@ -141,14 +141,14 @@ If you want to save it in bower.json file, remember to add flag --save
             <span id="inputIcon" class$="flag-icon flag-icon-[[_getCountryCode(country.code)]]"></span>
             <template is="dom-if" if="[[_suggestions.length]]" >
                 <paper-material>
-                    <paper-menu>
+                    <paper-listbox>
                         <template is="dom-repeat" items="[[_suggestions]]">
                             <paper-item on-mouseover="_mouseMoveAction" on-tap="_selectItem">
                                 <span>[[_getDisplayValue(item)]]</span>
                                 <span class$="flag-icon menu-icon flag-icon-[[_getCountryCode(item.code)]]"></span>
                             </paper-item>
                         </template>
-                    </paper-menu>
+                    </paper-listbox>
                 </paper-material>
             </template>
         </div>
