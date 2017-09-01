@@ -17,55 +17,72 @@
       <paper-countries></paper-countries>
     </template>
   </test-fixture>
-  <template is="dom-bind" id="custom-properties">
-    <paper-countries id="countryElement" country="[[country]]"></paper-countries>
-  </template>
+
+  <test-fixture id="binding">
+    <template>
+      <paper-countries country='{"name":"India","code":"in"}'></paper-countries>
+    </template>
+  </test-fixture>
 
   <test-fixture id="advanced">
     <template>
-      <paper-countries id="countryEle"></paper-countries>
+      <paper-countries></paper-countries>
     </template>
   </test-fixture>
 
   <script>
-    suite('paper-countries properties', function () {
-      var element = fixture('basic');
-      test('instantiating the element works', function () {
+  /* global suite fixture test setup assert MockInteractions flush */
+    suite('paper-countries properties', function() {
+      var element;
+
+      setup(() => {
+        element = fixture('basic');
+      });
+
+      test('instantiating the element works', function() {
         assert.equal(element.is, 'paper-countries');
       });
-      test('get default label attribute', function () {
+
+      test('get default label attribute', function() {
         assert.isString(element.label);
-        assert.equal(element.label, "Country");
+        assert.equal(element.label, 'Country');
       });
-      test('get default required attribute', function () {
+
+      test('get default required attribute', function() {
         assert.isBoolean(element.required);
         assert.deepEqual(element.required, false);
       });
 
-      test('get default max-suggestions', function () {
+      test('get default max-suggestions', function() {
         assert.isNumber(element.maxSuggestions);
         assert.deepEqual(element.maxSuggestions, 5);
       });
+    });
 
-      test('bind to country', function () {
-        var scope = document.querySelector('#custom-properties');
-        scope.country = {
-          name: "India",
-          code: "in"
-        };
-        assert.isObject(scope.$.countryElement.country);
-        assert.deepEqual(scope.$.countryElement.country, scope.country);
-        assert.equal(scope.$.countryElement.$.input.value, scope.country.name);
-        var backgroundImage = scope.$.countryElement.$.inputIcon.style.backgroundImage;
+    suite('bound properties', function() {
+      var element;
+      const bound = {'name': 'India', 'code': 'in'};
+
+      setup(() => {
+        element = fixture('binding');
+      });
+
+      test('bind to country', function() {
+        assert.isObject(element.country);
+        assert.deepEqual(element.country, bound);
+        assert.equal(element.$.input.value, bound.name);
+        var backgroundImage = element.$.inputIcon.style.backgroundImage;
         assert.isAbove(backgroundImage.split('.svg').length, 0);
       });
     });
 
-    suite('testing binding and suggestions', function () {
+    suite('testing binding and suggestions', function() {
       var advancedModeFixture;
+
       setup(function() {
         advancedModeFixture = fixture('advanced');
       });
+
       test('get 0 suggestions by entering `abcd` to input field', function(done) {
           var dropdownInput = advancedModeFixture.$.input;
           dropdownInput.value = 'abcd';
@@ -77,16 +94,19 @@
           MockInteractions.focus(dropdownInput);
           MockInteractions.pressAndReleaseKeyOn(dropdownInput, '65');
         });
+
         test('get 5 suggestions by entering `a` to input field', function(done) {
           var dropdownInput = advancedModeFixture.$.input;
-          dropdownInput.value = 'a';
-          dropdownInput.addEventListener('keyup', function() {
+              dropdownInput.set('value', 'a');
+          MockInteractions.focus(dropdownInput);
+          MockInteractions.pressAndReleaseKeyOn(dropdownInput, '65');
+            dropdownInput.addEventListener('keyup', () => {
+            flush(() => {
               assert.isArray(advancedModeFixture._suggestions);
               assert.equal(advancedModeFixture._suggestions.length, 5);
               done();
+            });
           });
-          MockInteractions.focus(dropdownInput);
-          MockInteractions.pressAndReleaseKeyOn(dropdownInput, '65');
         });
     });
   </script>
