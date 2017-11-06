@@ -532,7 +532,7 @@ If you want to save it in bower.json file, remember to add flag --save
       }
       const inputLower = this.$.input.value.toLowerCase();
       const suggestionLower = firstSuggestion.toLowerCase();
-      if (!suggestionLower.includes(inputLower)) {
+      if (suggestionLower.indexOf(inputLower)!=0) {
         return this._suggestion = '';
       }
       this._suggestion = firstSuggestion;
