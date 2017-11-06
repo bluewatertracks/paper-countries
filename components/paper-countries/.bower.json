@@ -1,0 +1,58 @@
+{
+  "name": "paper-countries",
+  "homepage": "https://github.com/bluewatertracks/paper-countries",
+  "authors": [
+    "Raju Maisnam",
+    "Dmytro Hrytsenko",
+    "Bhargav Konkathi",
+    "Blue Water Tracks Team"
+  ],
+  "description": "Country flag dropdown",
+  "main": "paper-countries.html",
+  "keywords": [
+    "polymer",
+    "web-component",
+    "web-components",
+    "paper-countries",
+    "country-flags",
+    "country-flags-dropdown"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "flag-icon-css": "^2.7.0",
+    "polymer": "1 - 2",
+    "paper-input": "^2.0.0",
+    "paper-listbox": "^2.0.0",
+    "paper-item": "^2.0.0",
+    "iron-ajax": "^2.0.0",
+    "paper-material": "^2.0.0",
+    "iron-component-page": "^2.0.0",
+    "webcomponentsjs": "^1.0.10",
+    "iron-form-element-behavior": "PolymerElements/iron-form-element-behavior#^2.0.0"
+  },
+  "devDependencies": {
+    "iron-demo-helpers": "^2.0.0",
+    "web-component-tester": "^6.0.0",
+    "iron-test-helpers": "^2.0.0"
+  },
+  "resolutions": {
+    "test-fixture": "^3.0.0-rc.1"
+  },
+  "_release": "e6df750e30",
+  "_resolution": {
+    "type": "branch",
+    "branch": "master",
+    "commit": "e6df750e30dc3402689c4d72e2fbf00cc9597c43"
+  },
+  "_source": "https://github.com/bluewatertracks/paper-countries.git",
+  "_target": "master",
+  "_originalSource": "bluewatertracks/paper-countries",
+  "_direct": true
+}

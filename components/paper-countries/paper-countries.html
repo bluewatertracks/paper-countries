@@ -1,0 +1,551 @@
+<!--
+@license
+Copyright (c) 2015 The Polymer Project Authors. All rights reserved.
+This code may only be used under the BSD style license found at http://polymer.github.io/LICENSE.txt
+The complete set of authors may be found at http://polymer.github.io/AUTHORS.txt
+The complete set of contributors may be found at http://polymer.github.io/CONTRIBUTORS.txt
+Code distributed by Google as part of the polymer project is also
+subject to an additional IP rights grant found at http://polymer.github.io/PATENTS.txt
+-->
+
+<link rel="import" href="../polymer/polymer.html">
+<link rel="import" href="../paper-listbox/paper-listbox.html">
+<link rel="import" href="../paper-input/paper-input.html">
+<link rel="import" href="../paper-item/paper-item.html">
+<link rel="import" href="../paper-material/paper-material.html">
+<link rel="import" href="../iron-form-element-behavior/iron-form-element-behavior.html">
+<link rel="import" href="flag-icons-styles.html">
+<script src="src/countries.js"></script>
+<!--
+
+`<paper-countries>` is a typeahead component based on Polymer thats provides user with a sleek way of selecting a country from a prefetched list.
+
+    <paper-countries country="[[country]]" value="[[country.name]]" auto-validate="true" placeholder="Country"></paper-countries>
+
+The label that will show up as the label for tags input. It not specified, the default Country will be displayed. In this case max-suggestions set to 2.
+
+It also allows limiting the no of suggestions in the dropdown. By default value is 5.
+
+    <paper-countries max-suggestions="2"  country="[[country]]" value="[[country.name]]" auto-validate="true" placeholder="Country">
+
+A `paper-countries` can use the country property to set country name in the dropdown along with the country flag.
+The result of selected output looks like `{ code: AU, name: Australia }`
+
+### Styling
+
+The following custom properties are available for styling:
+
+### Installation
+
+Install with bower
+
+    bower install paper-countries
+
+If you want to save it in bower.json file, remember to add flag --save
+
+    bower install --save paper-countries
+
+@element paper-countries
+@demo demo/index.html
+-->
+<dom-module id="paper-countries">
+    <template>
+        <style include="flag-icons-styles"></style>
+        <style>
+            :host {
+                display: block;
+                box-sizing: border-box;
+            }
+
+            .container {
+              position:relative;
+            }
+
+            paper-material {
+                left: 0;
+                right: 0;
+                position: absolute;
+                z-index: 10;
+            }
+
+            paper-item {
+                cursor: pointer;
+            }
+
+            .countrycode::first-letter {
+                visibility: hidden;
+            }
+
+            .countrycode {
+                font-family: 'Roboto', 'Noto', sans-serif;
+                -webkit-font-smoothing: antialiased;
+                font-size: 16px;
+                font-weight: 400;
+                line-height: 24px;
+                color: #b2b2b2;
+            }
+
+            .countrycode-with-label {
+                position: absolute;
+                top: 12px;
+            }
+
+            .countrycode-without-label {
+                position: absolute;
+                top: -8px;
+            }
+
+            .iron-selected {
+                background: #E0E0E0;
+            }
+
+            .flag-icon {
+                background-size: contain;
+                background-position: 50%;
+                background-repeat: no-repeat;
+                position: absolute;
+                display: inline-block;
+                width: 100px;
+                height: 30px;
+            }
+
+            #inputIcon {
+              right: -25px;
+              top: 16px;
+            }
+
+            .menu-icon {
+              right: -20px;
+            }
+        </style>
+        <div class="container">
+          <p class$="countrycode {{_getClasses(noLabelFloat)}}">{{_getAutoDisplay(_suggestion)}}</p>
+            <paper-input
+              id="input"
+              value="{{value}}"
+              on-keyup="_keyup"
+              on-keydown="_keydown"
+              label="[[label]]"
+              always-float-label="[[alwaysFloatLabel]]"
+              autofocus="[[autofocus]]"
+              disabled="[[disabled]]"
+              error-message="[[errorMessage]]"
+              no-label-float="[[noLabelFloat]]"
+              readonly="[[readonly]]"
+              placeholder="[[placeholder]]"
+              required="[[required]]"
+              auto-validate="[[autoValidate]]"
+              on-focusout="_autoselect"
+              >
+            </paper-input>
+            <span id="inputIcon" class$="flag-icon flag-icon-[[_getCountryCode(country.code)]]"></span>
+            <template is="dom-if" if="[[_suggestions.length]]" >
+                <paper-material>
+                    <paper-listbox id="listbox">
+                        <template is="dom-repeat" items="[[_suggestions]]">
+                            <paper-item on-mouseover="_mouseMoveAction" on-tap="_selectItem">
+                                <span>[[_getDisplayValue(item)]]</span>
+                                <span class$="flag-icon menu-icon flag-icon-[[_getCountryCode(item.code)]]"></span>
+                            </paper-item>
+                        </template>
+                    </paper-listbox>
+                </paper-material>
+            </template>
+        </div>
+    </template>
+</dom-module>
+<script>
+(function() {
+  /* global countries */
+  const selectValidCountry = 'Please select valid country.';
+  const DOWN_ARROW = 40;
+  const UP_ARROW = 38;
+  const BACKSPACE = 8;
+  const DELETE = 46;
+  const TAB = 9;
+  const ENTER = 13;
+  const A = 65;
+  const Z = 90;
+  const NUM_0 = 96;
+  const F11 = 122;
+  const DEAD_KEY = 229;
+
+  Polymer({
+    is: 'paper-countries',
+    properties: {
+      /**
+       * The label for paper-countries
+       */
+      label: {
+        type: String,
+        value: 'Country',
+      },
+
+      /**
+       * Set to true to mark the paper-countries as required.
+       */
+      required: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * A placeholder string in addition to the label which is shown in
+       * paper-countries input field like default value
+       */
+      placeholder: {
+        type: String,
+        value: 'Please enter country name',
+      },
+
+      /**
+       * Maximum number of suggestions to show as dropdown list.
+       */
+      maxSuggestions: {
+        type: Number,
+        value: 5,
+      },
+
+      /**
+       * Paper-countries input value.
+       */
+      value: {
+        type: String,
+        notify: true,
+      },
+
+      /**
+       * Set to true to always float the label on paper-countries.
+       */
+      alwaysFloatLabel: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Bind this to the <paper-input>'s autofocus property.
+       */
+      autofocus: {
+        type: Boolean,
+        value: false,
+      },
+
+      /**
+       * Set to true to disable paper-countries.
+       */
+      disabled: {
+        type: Boolean,
+        value: false,
+      },
+      /**
+       * The error message to display when the input is invalid.
+       */
+      errorMessage: {
+        type: String,
+      },
+      /**
+       * Set to true to disable the floating label.
+       */
+      noLabelFloat: {
+        type: Boolean,
+        value: false,
+      },
+      /**
+       * Set to true to set paper-countries in readonly mode
+       */
+      readonly: {
+        type: Boolean,
+        value: false,
+      },
+      /**
+       * Set to true to auto-validate the input value.
+       */
+      autoValidate: {
+        type: Boolean,
+        value: false,
+      },
+      /**
+       * Property which hold country object with name and country flag
+       */
+      country: {
+        type: Object,
+        notify: true,
+        observer: '_countryChange',
+      },
+      /**
+       * The prefetched candidates hold all countries
+       */
+      _prefetchedCandidates: {
+        type: Array,
+        value: countries,
+      },
+      /**
+       * Internal variable holding all matched suggestions.
+       */
+      _suggestions: {
+        type: Array,
+        value: () => [],
+      },
+
+      /**
+       * The property in json object that should be chosen for the paper-input
+       * value when an element is selected from the suggestions.
+       */
+      _displayProp: {
+        type: String,
+        value: 'name',
+      },
+
+       _selected: {
+        type: Boolean,
+        value: false,
+      },
+    },
+    behaviors: [
+      Polymer.IronFormElementBehavior,
+    ],
+
+    focus: function() {
+      this.$.input.focus();
+    },
+
+    _getAutoDisplay: function(_suggestion) {
+      const input = _suggestion;
+      if (input != '' &&
+          typeof(_suggestion) != 'undefined' &&
+          _suggestion !='') {
+        return input.substring(0, 1) + _suggestion.substring(1);
+      }
+      return '';
+    },
+
+    _getClasses: function(noLabelFloat) {
+      if (noLabelFloat &&
+          typeof(noLabelFloat) != 'undefined' &&
+          noLabelFloat == true) {
+        return 'countrycode-without-label';
+      }
+      return 'countrycode-with-label';
+    },
+
+    /**
+     * Callback for keydown event
+     * @param {Event} e
+     */
+    _keydown: function(e) {
+      const keyCode = this._getKeyCode(e);
+      if (keyCode == DOWN_ARROW || keyCode == UP_ARROW) {
+        e.preventDefault();
+      }
+      else if (keyCode == BACKSPACE) {
+        this.$.inputIcon.setAttribute('class', 'flag-icon');
+      }
+      else if (keyCode == TAB) {
+        if (this._suggestion) {
+          const code = this._suggestionCode.toLowerCase();
+          const name = this._suggestion;
+          this.country = {code, name};
+          this._selected = true;
+          this.set('_suggestions', []);
+        }
+      }
+    },
+
+    _getKeyCode: (e) => e.which ||
+                        e.keyCode && parseInt(e.keyCode) ||
+                        e.code && parseInt(e.code),
+
+    /**
+     * Callback for keyup event
+     *
+     * @param {Event} e
+     */
+    _keyup: function(e) {
+      const keyCode = this._getKeyCode(e);
+      const suggestionsMenu = Polymer.dom(this.root).querySelector('#listbox');
+      const paperInput = Polymer.dom(this.root).querySelector('paper-input');
+      if (keyCode == DOWN_ARROW) {
+        this.focus();
+        this._downButtonAction(suggestionsMenu, paperInput);
+      }
+      else if (keyCode == UP_ARROW) {
+        this.focus();
+        this._upButtonAction(suggestionsMenu, paperInput);
+      }
+      else if (keyCode == ENTER) {
+        const selectedItem = suggestionsMenu.focusedItem;
+        this._setSelectedItem(selectedItem, suggestionsMenu);
+      }
+      else if (keyCode >= A && keyCode <= Z || // a to z
+               keyCode >= NUM_0 && keyCode <= F11 || // numpad and f keys
+               keyCode == BACKSPACE || keyCode == DELETE || // backspace or delete
+               keyCode == DEAD_KEY) { // dead key
+        this._selected =false;
+        this.$.inputIcon.setAttribute('class', 'flag-icon');
+        if (suggestionsMenu) {
+          suggestionsMenu.select(-1);
+        }
+        this._searchCountries(this.$.input.value.trim());
+      }
+    },
+
+    /**
+     * Callback on mouseover event on paper-item
+     * @param {Event} e
+     */
+    _mouseMoveAction: function(e) {
+      const suggestionsMenu = Polymer.dom(this.root).querySelector('#listbox');
+      if (suggestionsMenu) {
+        const selectedItem = e.currentTarget;
+        const index = Number(suggestionsMenu.indexOf(selectedItem));
+        suggestionsMenu.select(index);
+        this.focus();
+      }
+    },
+
+    _upButtonAction: function(menuList, inputElement) {
+      const selectedItem = menuList.focusedItem;
+      let index = 0;
+      if (selectedItem) {
+        index = Number(menuList.indexOf(selectedItem));
+        index = Math.max(index - 1, -1);
+      }
+      menuList.select(index);
+      this.focus();
+    },
+
+    _downButtonAction: function(menuList, inputElement) {
+      const selectedItem = menuList.focusedItem;
+      let index = 0;
+      if (selectedItem) {
+        index = Number(menuList.indexOf(selectedItem));
+        index = Math.min(index + 1, this._suggestions.length - 1);
+      }
+      menuList.select(index);
+      this.focus();
+    },
+
+    /**
+     * Callback for click event on paper-item which hold suggestions for query
+     * @param {Event} e
+     */
+    _selectItem: function(e) {
+      const suggestionsMenu = Polymer.dom(this.root).querySelector('#listbox');
+      if (suggestionsMenu) {
+        var selectedItem = e.currentTarget;
+        this._setSelectedItem(selectedItem, suggestionsMenu);
+        e.stopPropagation();
+      }
+    },
+
+    _getDisplayValue: function(item) {
+      return item[this._displayProp];
+    },
+
+    _getCountryCode: function(countryCode) {
+      return countryCode ? countryCode.toLowerCase() : '';
+    },
+
+    _searchCountries: function(query) {
+      if (query == '') {
+        this.set('_suggestions', []);
+        this.country={};
+        this._updateSuggestion();
+        return;
+      }
+      const pattern = new RegExp(query.toLowerCase());
+      const matched = [];
+      this._prefetchedCandidates.forEach((country) => {
+        if (matched.length < this.maxSuggestions) {
+          if (pattern.test(country.name.toLowerCase())) {
+            matched.push(country);
+          }
+        }
+      });
+      this.set('_suggestions', matched);
+      this._updateSuggestion();
+      if (this._suggestions.length < 1 &&
+          this.$.input.value &&
+          !this._suggestion) {
+        this.$.input.invalid =true;
+        this.$.input.errorMessage = this.errorMessage || selectValidCountry;
+      }
+    },
+
+    _countryChange: function(country) {
+      if (country && country.name) {
+        this.value = country.name;
+        this._selected = true;
+        this.set('_suggestions', []);
+      }
+    },
+
+    _setSelectedItem: function(selectedItem, suggestionsMenu) {
+      const index = Number(suggestionsMenu.indexOf(selectedItem));
+      const selectedCountry = this._suggestions[index];
+      const name = this._getDisplayValue(selectedCountry);
+      const code = selectedCountry.code.toLowerCase();
+      this.value = name;
+      this.country = {code, name};
+      this._selected = true;
+      this._suggestion = '';
+      this.set('_suggestions', []);
+    },
+
+    _autoselect: function(e) {
+      const countryVal = this.$.input.value.trim();
+      // Need to check if length is zero ,
+      if (!this._selected &&
+          this._suggestions.length < 1 &&
+          this.inputValue) {
+        this.focus();
+        this.country = {};
+        this._selected = false;
+        this.$.input.invalid = true;
+        this.$.input.errorMessage = this.errorMessage ||
+                                    selectValidCountry;
+        return;
+      }
+      this._suggestions.forEach((country) => {
+        if (country.name.toLowerCase() == countryVal.toLowerCase()) {
+           this.country = {
+            code: country.code,
+            name: country.name,
+          };
+           this.set('_suggestions', []);
+           this.$.input.invalid = false;
+           this._suggestion = '';
+           return;
+        } else if (!this._selected) {
+          this.country = {};
+        }
+      });
+    },
+
+    _updateSuggestion: function() {
+      if (this._suggestions.length == 0) {
+        return this._suggestion = '';
+      }
+      const firstSuggestion = this._suggestions[0].name;
+      if (this.$.input.value == '') {
+        return this._suggestion = '';
+      }
+      const inputLower = this.$.input.value.toLowerCase();
+      const suggestionLower = firstSuggestion.toLowerCase();
+      if (suggestionLower.indexOf(inputLower)!=0) {
+        return this._suggestion = '';
+      }
+      this._suggestion = firstSuggestion;
+      this._suggestionCode = this._suggestions[0].code;
+    },
+
+    reset: function() {
+      this.set('_suggestions', []);
+      this.$.input.invalid = true;
+      this._selected = false;
+      this.$.input.errorMessage = selectValidCountry;
+      this.focus();
+    },
+  });
+}());
+</script>
