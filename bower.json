@@ -28,19 +28,22 @@
   ],
   "dependencies": {
     "flag-icon-css": "^2.7.0",
-    "polymer": "^1.7.1",
-    "paper-input": "^1.1.22",
-    "paper-menu": "^1.2.2",
-    "paper-item": "^1.2.1",
-    "iron-ajax": "^1.4.3",
-    "paper-material": "^1.0.6",
-    "iron-component-page": "^1.1.8",
-    "webcomponentsjs": "^0.7.23",
-    "iron-form-element-behavior": "PolymerElements/iron-form-element-behavior#^1.0.6"
+    "polymer": "1 - 2",
+    "paper-input": "^2.0.0",
+    "paper-listbox": "^2.0.0",
+    "paper-item": "^2.0.0",
+    "iron-ajax": "^2.0.0",
+    "paper-material": "^2.0.0",
+    "iron-component-page": "^2.0.0",
+    "webcomponentsjs": "^1.0.10",
+    "iron-form-element-behavior": "PolymerElements/iron-form-element-behavior#^2.0.0"
   },
   "devDependencies": {
-    "iron-demo-helpers": "^1.2.5",
-    "web-component-tester": "^5.0.0",
-    "iron-test-helpers": "^1.4.0"
+    "iron-demo-helpers": "^2.0.0",
+    "web-component-tester": "^6.0.0",
+    "iron-test-helpers": "^2.0.0"
+  },
+  "resolutions": {
+    "test-fixture": "^3.0.0-rc.1"
   }
 }
